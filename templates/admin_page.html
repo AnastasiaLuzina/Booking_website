@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap @5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Боковое меню -->
+        <nav class="sidebar bg-dark text-white p-3">
+            <h4>Панель управления</h4>
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'admin_page' %}active{% endif %}" 
+                       href="{{ url_for('admin_page') }}">
+                        <i class="bi bi-speedometer2 me-2"></i> Главная
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'manage_users' %}active{% endif %}" 
+                       href="{{ url_for('manage_users') }}">
+                        <i class="bi bi-people me-2"></i> Пользователи
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'system_logs' %}active{% endif %}" 
+                       href="{{ url_for('system_logs') }}">
+                        <i class="bi bi-journal-text me-2"></i> Логи
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'settings' %}active{% endif %}" 
+                       href="{{ url_for('settings') }}">
+                        <i class="bi bi-gear me-2"></i> Настройки
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="mt-auto">
+                <a href="{{ url_for('logout') }}" class="btn btn-danger w-100">
+                    <i class="bi bi-box-arrow-left me-2"></i> Выход
+                </a>
+            </div>
+        </nav>
+
+        <!-- Основное содержимое -->
+        <main class="content p-4 w-100">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Добро пожаловать, {{ session.user.email }}!
+                    </li>
+                </ol>
+            </nav>
+
+            <div class="container-fluid">
+                {% block content %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Статистика системы</h5>
+                                <p class="card-text">Здесь может быть статистика по пользователям/заказам</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Последние действия</h5>
+                                <ul class="list-group list-group-flush">
+                                    {% for action in recent_actions %}
+                                    <li class="list-group-item">{{ action }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap @5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

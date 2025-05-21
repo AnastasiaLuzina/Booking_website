@@ -13,11 +13,11 @@
         </div>
     {% endif %}
     
-    <form method="POST" action="{{ url_for('Authorization.find_user') }}">
+    <form method="POST" action="{{ url_for('authorization') }}">  <!-- Исправлено -->
         <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" required
-                   value="{{ request.form.email or '' }}">
+            <label> Логин:</label>
+            <input type="login" name="login" required
+                   value="{{ request.form.login or '' }}">
         </div>
         
         <div class="form-group">
