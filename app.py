@@ -35,17 +35,51 @@ class Checkers:
         
 
     @staticmethod
-    def hash_password(password, salt=None):
-        if salt is None:
-            salt = secrets.token_hex(16)  
-        hashed = hashlib.sha256((password + salt).encode()).hexdigest()
-        return f"{salt}${hashed}"  
+    def get_hash_password(p: str) -> str:
+         # Создаем MD5 хеш
+        md5_hash = hashlib.md5()
+        
+        # Кодируем строку в байты (UTF-8) и обновляем хеш
+        md5_hash.update(p.encode('utf-8'))
+        
+        # Получаем hex-представление хеша
+        return md5_hash.hexdigest()
     
+    # @staticmethod
+    # def check_hashed_password(password, stored_hash):
+    #     if not stored_hash or '$' not in stored_hash:
+    #         return False
+    #     try:
+    #         salt, hashed = stored_hash.split('$')
+    #         new_hash = hashlib.sha256((password + salt).encode()).hexdigest()
+    #         return new_hash == hashed
+    #     except:
+    #         return False
+
     @staticmethod
-    def check_hashed_password(password, stored_hash):
-        salt, hashed = stored_hash.split('$')
-        new_hash = hashlib.sha256((password + salt).encode()).hexdigest()
-        return new_hash == hashed
+    def check_authorization(login, password):
+        errors = []
+        if not login or not password:
+            errors.append("Заполните все поля")
+            return errors
+            
+        # conn = sqlite3.connect(DATABASE)
+        # cursor = conn.cursor()
+        # try:
+        #     cursor.execute("SELECT * FROM User WHERE login = ?", (login,))
+        #     user = cursor.fetchone()
+            
+        #     if not user:
+        #         errors.append("Пользователь с таким логином не найден")
+        #     else:
+        #         if Checkers.get_hash_password(password) != user[5]:
+        #             errors.append("Неверный пароль")
+        # except sqlite3.Error as e:
+        #     errors.append("Ошибка базы данных")
+        # finally:
+        #     conn.close()
+        
+        return errors
 
     @staticmethod
     def is_email_unique(email):
@@ -85,27 +119,27 @@ class Checkers:
                 errors.append("Этот email уже занят")
         return errors
 
-    @staticmethod
-    def check_authorization(login, password):
-        errors = []
-        if not login or not password:
-            errors.append("Заполните все поля")
-        else:
+    # @staticmethod
+    # def check_authorization(login, password):
+    #     errors = []
+    #     if not login or not password:
+    #         errors.append("Заполните все поля")
+    #     else:
             
-            if Checkers.is_login_unique(login):
-                errors.append("Пользователь с таким логином не найден")
+    #         if Checkers.is_login_unique(login):
+    #             errors.append("Пользователь с таким логином не найден")
                 
-            conn = sqlite3.connect(DATABASE)
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM User WHERE login = ?", (login,))
-            user = cursor.fetchone()
-            conn.close()
-            if not user:
-                errors.append("Пользователь не найден")
-            else:
-                if not Checkers.check_hashed_password(password, user[5]):
-                    errors.append("Неверный пароль")
-        return errors
+    #         conn = sqlite3.connect(DATABASE)
+    #         cursor = conn.cursor()
+    #         cursor.execute("SELECT * FROM User WHERE login = ?", (login,))
+    #         user = cursor.fetchone()
+    #         conn.close()
+    #         if not user:
+    #             errors.append("Пользователь не найден")
+    #         else:
+    #             if not Checkers.check_hashed_password(password, user[5]):
+    #                 errors.append("Неверный пароль")
+    #     return errors
 
     @staticmethod
     def admin_checker(user_id):
@@ -148,19 +182,27 @@ class Authorization:
         try:
             conn = sqlite3.connect(DATABASE)
             cursor = conn.cursor()
-            cursor.execute("SELECT user_id, password, flag_role FROM User WHERE login = ?", (login,))
+            cursor.execute("SELECT user_id, password, flag_role FROM User WHERE login = ? AND password = ?", (login, Checkers.get_hash_password(password)))
             user = cursor.fetchone()
+            
             if not user:
-                return (False, "Пользователь с таким login не найден")
-            user_id, hashed_password, flag_role = user
+                return (False, "Пользователь не найден")
+            
+            # Возвращаем кортеж (success, data)
+            return (True, {
+                'user_id': user[0],
+                'flag_role': user[2]
+            })
+            
+            # user_id, hashed_password, flag_role = user
 
-            if Checkers.check_hashed_password(password, hashed_password):
-                return (True, user_id, flag_role)
-            else:
-                return (False, "Неверный пароль")
+            # if Checkers.get_hash_password(password):
+            #     
+            # else:
+            #     return (False, "Неверный пароль")
             
         except sqlite3.Error as e:
-            return (False)
+            return (False, None)
         finally:
             conn.close()
 
@@ -192,30 +234,31 @@ def registration():
 
 
 
+
 @app.route("/authorization", methods=["GET", "POST"])
 def authorization():
     if request.method == "POST":
-        
-        
         login = request.form.get("login")
         password = request.form.get("password")
         
-        errors = Checkers.check_authorization(login, password)
+        errors = Checkers.check_authorization(login, password) #проверка на пустоту полей
         
         if not errors:
-            auth_result = Authorization.comparison_to_base(login, password)
-            if auth_result[0]:
-                user_id, flag_role = auth_result[1], auth_result[2]
-                session["user"] = {"id": user_id, "login": login, "role": flag_role}
+            success, auth_data = Authorization.comparison_to_base(login, password)
+            
+            if success:
+                session["user"] = {
+                    "id": auth_data['user_id'],
+                    "login": login,
+                    "role": auth_data['flag_role']
+                }
                 
-                admin_flag = Checkers.admin_checker(user_id)
+                if auth_data['flag_role'] == 1:  # Проверка на админа
+                    return redirect(url_for('admin_page'))
                 
-                if admin_flag == 1:
-                     return redirect(url_for('admin_page'))  
-                   
                 return redirect(url_for('main_page'))
             else:
-                errors.append(auth_result[1])
+                errors.append(auth_data)  # Добавляем сообщение об ошибке
                 
         return render_template("authorization.html", errors=errors)
     return render_template("authorization.html", errors=[])

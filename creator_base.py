@@ -6,16 +6,19 @@ connection = sqlite3.connect('booking_database.db')
 cursor = connection.cursor()
 
 
-cursor.execute("DROP TABLE IF EXISTS User")  
-cursor.execute("DROP TABLE IF EXISTS Halls") 
-cursor.execute("DROP TABLE IF EXISTS Booking")  
-cursor.execute("DROP TABLE IF EXISTS Fhoto") 
-cursor.execute("DROP TABLE IF EXISTS Equipment")  
+# cursor.execute("DROP TABLE IF EXISTS User")  
+# cursor.execute("DROP TABLE IF EXISTS Hall") 
+# cursor.execute("DROP TABLE IF EXISTS Booking")  
+# cursor.execute("DROP TABLE IF EXISTS Fhoto") 
+# cursor.execute("DROP TABLE IF EXISTS Equipment")  
+# cursor.execute("DROP TABLE IF EXISTS CrossEquipmentHall")
+
+
 
 
 
 cursor.execute('''
-CREATE TABLE User (
+CREATE TABLE IF NOT EXISTS User (
     user_id INTEGER PRIMARY KEY,
     first_name TEXT NOT NULL,
     second_name TEXT NOT NULL,
@@ -29,14 +32,14 @@ CREATE TABLE User (
 ''')
 
 cursor.execute('''
-CREATE TABLE Equipment (
+CREATE TABLE IF NOT EXISTS Equipment (
     equipment_id INTEGER PRIMARY KEY,
     title TEXT NOT NULL
 )
 ''')
 
 cursor.execute('''
-CREATE TABLE Fhoto (
+CREATE TABLE IF NOT EXISTS Fhoto (
     equipment_id INTEGER PRIMARY KEY,
     fhoto_bytes BLOB NOT NULL,
     hall_id INTRGER NOT NULL,
@@ -45,19 +48,27 @@ CREATE TABLE Fhoto (
 ''')
 
 cursor.execute('''
-CREATE TABLE Hall (
+CREATE TABLE IF NOT EXISTS Hall (
     hall_id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
     address TEXT NOT NULL,
     description TEXT NOT NULL,
-    equipment_id INTEGER NOT NULL,
-    count_likes INTEGER NOT NULL,
-    FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
+    count_likes INTEGER NOT NULL
 )
 ''')
 
 cursor.execute('''
-CREATE TABLE Booking (
+CREATE TABLE IF NOT EXISTS CrossEquipmentHalls (
+        crossEquipmentHalls_id INTEGER PRIMARY KEY,
+        equipment_id INTRGER NOT NULL,
+        hall_id INTRGER NOT NULL,
+        FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
+        FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
+)
+''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Booking (
     booking_id INTEGER PRIMARY KEY,  
     user_id INTEGER NOT NULL,
     hall_id INTEGER NOT NULL,
@@ -71,7 +82,7 @@ CREATE TABLE Booking (
 ''')
 
 
-hashed_password = Checkers.hash_password('1')  
+hashed_password = Checkers.get_hash_password('1')  
 cursor.execute('''
     INSERT INTO User (first_name, second_name, patronymic, login, email, age, password, flag_role)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
