@@ -1,6 +1,6 @@
 import sqlite3
 import hashlib
-from app import Checkers
+from controllers.userController import Checkers
 
 connection = sqlite3.connect('booking_database.db')
 cursor = connection.cursor()

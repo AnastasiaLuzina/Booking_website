@@ -1,5 +1,5 @@
 from flask import Flask, session, request, render_template, redirect, url_for
-
+from tools.tools_for_base import connect_to_base, close_base, commit_in_base
 import sqlite3
 import re
 
@@ -9,7 +9,7 @@ import secrets
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-DATABASE = 'booking_database.db'
+
 
 class Checkers:
     
@@ -25,11 +25,10 @@ class Checkers:
     
     @staticmethod
     def is_login_unique(login):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        cursor = connect_to_base()
         cursor.execute("SELECT * FROM User WHERE login = ?", (login,))
         user = cursor.fetchone()
-        conn.close()
+        close_base()
         return user is None
         
         
@@ -83,11 +82,10 @@ class Checkers:
 
     @staticmethod
     def is_email_unique(email):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        cursor = connect_to_base()
         cursor.execute("SELECT * FROM User WHERE email = ?", (email,))
         user = cursor.fetchone()
-        conn.close()
+        close_base()
         return user is None
 
 
@@ -143,8 +141,7 @@ class Checkers:
 
     @staticmethod
     def admin_checker(user_id):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        cursor = connect_to_base()
         cursor.execute("SELECT flag_role FROM User WHERE user_id = ?", (user_id,))
         user = cursor.fetchone()
         return user[0]
@@ -156,8 +153,7 @@ class Checkers:
 class Registration:    
     @staticmethod
     def add_to_base(first_name, second_name, patronymic, login, email, age, password, flag_role):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        cursor = connect_to_base()
         try:
             hashed_password = Checkers.hash_password(password)
             cursor.execute('''
@@ -165,14 +161,14 @@ class Registration:
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (first_name, second_name, patronymic, login, email, age, hashed_password, flag_role))
             user_id = cursor.lastrowid
-            conn.commit()
+            commit_in_base()
             return True, user_id, flag_role
         except sqlite3.IntegrityError as e:
             return False, f"Ошибка: {e}"
         except Exception as e:
             return False, f"Произошла ошибка: {e}"
         finally:
-            conn.close()
+            close_base()
                 
                 
                 
@@ -180,8 +176,7 @@ class Authorization:
     @staticmethod
     def comparison_to_base(login, password):
         try:
-            conn = sqlite3.connect(DATABASE)
-            cursor = conn.cursor()
+            cursor = connect_to_base()
             cursor.execute("SELECT user_id, password, flag_role FROM User WHERE login = ? AND password = ?", (login, Checkers.get_hash_password(password)))
             user = cursor.fetchone()
             
@@ -204,7 +199,7 @@ class Authorization:
         except sqlite3.Error as e:
             return (False, None)
         finally:
-            conn.close()
+            close_base()
 
 
 @app.route("/registration", methods=["GET", "POST"])
