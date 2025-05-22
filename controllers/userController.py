@@ -1,12 +1,17 @@
 from flask import Flask, session, request, render_template, redirect, url_for
+import sys
+sys.path.append("C:\\python_project\\Booking_website")
+
 from tools.tools_for_base import connect_to_base, close_base, commit_in_base
+
+
 import sqlite3
 import re
 
 import hashlib
 import secrets
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
