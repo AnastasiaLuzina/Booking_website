@@ -1,6 +1,6 @@
 from flask import Flask, session, request, render_template, redirect, url_for
 import sys
-sys.path.append("C:\\python_project\\Booking_website")
+sys.path.append("..\\Booking_website")
 
 from tools.tools_for_base import connect_to_base, close_base, commit_in_base
 
