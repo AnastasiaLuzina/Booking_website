@@ -1,0 +1,93 @@
+{
+  "workbench.colorCustomizations": {
+    "editor.background": "#121218",
+    "editorCursor.foreground": "#FF007C",
+    "editor.selectionBackground": "#3A3A50",
+    "editor.lineHighlightBackground": "#10101a",
+    "sideBar.background": "#0d0d13",
+    "statusBar.background": "#0e0e16",
+    "editor.selectionHighlightBackground": "#4A4A68",
+    "editor.selectionHighlightBorder": "#FF007C"
+  },
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      // --- ИСПРАВЛЕНИЯ ДЛЯ ФЛАСКА ---
+      // 1. Декораторы @app.route
+      {
+        "scope": "storage.modifier.decorator", // Символ @
+        "settings": { "foreground": "#FF6347" } // Красный
+      },
+      {
+        "scope": "meta.decorator entity.name.function", // route
+        "settings": { "foreground": "#DA70D6" } // Фиолетовый
+      },
+      // 2. Встроенные функции (render_template, redirect)
+      {
+        "scope": "support.function.builtin",
+        "settings": { "foreground": "#82AAFF" } // Синий
+      },
+      // 3. Методы объектов (session.pop)
+      {
+        "scope": "variable.other.property",
+        "settings": { "foreground": "#89DDFF" } // Голубой
+      },
+      // --- ВАШИ СУЩЕСТВУЮЩИЕ ПРАВИЛА ---
+      {
+        "scope": "storage.type",
+        "settings": { "foreground": "#FFD700" }
+      },
+      {
+        "scope": "entity.name.section",
+        "settings": { "foreground": "#FFA07A" }
+      },
+      {
+        "scope": "entity.other.attribute-name",
+        "settings": { "foreground": "#66CDAA" }
+      },
+      {
+        "scope": "support.type.exception",
+        "settings": { "foreground": "#FF6347" }
+      },
+      {
+        "scope": "variable.language.special",
+        "settings": { "foreground": "#7FFFD4" }
+      },
+      {
+        "scope": "meta.annotation",
+        "settings": { "foreground": "#ADFF2F" }
+      },
+      {
+        "scope": "constant.character.escape",
+        "settings": { "foreground": "#FF1493" }
+      },
+      {
+        "scope": "markup.bold",
+        "settings": { "foreground": "#FF4500", "fontStyle": "bold" }
+      },
+      {
+        "scope": ["entity.name.function", "meta.function-call"],
+        "settings": { "foreground": "#00F7FF" }
+      },
+      {
+        "scope": "constant.language",
+        "settings": { "foreground": "#FF4500" }
+      },
+      {
+        "scope": "keyword.control.flow",
+        "settings": { "foreground": "#FFA500" }
+      },
+      {
+        "scope": "string.docstring",
+        "settings": { "foreground": "#3CB371" }
+      },
+      {
+        "scope": "support.function.magic",
+        "settings": { "foreground": "#BA55D3" }
+      },
+      {
+        "scope": "meta.structure.dictionary.value",
+        "settings": { "foreground": "#CD853F" }
+      }
+    ]
+  }
+}

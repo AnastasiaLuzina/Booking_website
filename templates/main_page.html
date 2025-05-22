@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+    <h1>Добро пожаловать, {{ user.email }}!</h1>
+    
+    <div class="user-info">
+        <p>Ваш ID: {{ user.id }}</p>
+        <p>Роль: {% if user.role == 0 %}Пользователь{% else %}Администратор{% endif %}</p>
+    </div>
+    
+    <div class="actions">
+        <a href="{{ url_for('logout') }}" class="btn logout">Выйти</a>
+    </div>
+{% endblock %}

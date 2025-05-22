@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        {% if session.user %}
+           <a href="{{ url_for('logout') }}">Выйти</a>  <!-- Убедитесь, что есть маршрут /logout -->
+        {% else %}
+            <a href="{{ url_for('authorization') }}">Вход</a>
+            <a href="{{ url_for('registration') }}">Регистрация</a>
+        {% endif %}
+    </nav>
+    
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
+
+# базовый шаблон
