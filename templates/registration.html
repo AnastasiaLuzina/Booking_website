@@ -13,7 +13,7 @@
         </div>
     {% endif %}
     
-    <form method="POST" action="{{ url_for('registration.login_user') }}">
+    <form method="POST" action="{{ url_for('registration') }}">  <!-- Исправлено -->
         <div class="form-group">
             <label>Имя:</label>
             <input type="text" name="first_name" required 
@@ -22,6 +22,12 @@
         
         <div class="form-group">
             <label>Фамилия:</label>
+            <input type="text" name="second_name" required
+                   value="{{ request.form.second_name or '' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Отчество</label>
             <input type="text" name="second_name" required
                    value="{{ request.form.second_name or '' }}">
         </div>
