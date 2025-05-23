@@ -182,7 +182,7 @@ class Authorization:
         try:
             conn = sqlite3.connect(DATABASE)
             cursor = conn.cursor()
-            cursor.execute("SELECT user_id, password, flag_role FROM User WHERE login = ? AND password = ?", (login, Checkers.get_hash_password(password)))
+            cursor.execute("SELECT user_id, password, flag_role FROM User WHERE email = ? AND password = ? OR login = ? AND password = ?", (login, Checkers.get_hash_password(password), login, Checkers.get_hash_password(password)))
             user = cursor.fetchone()
             
             if not user:
