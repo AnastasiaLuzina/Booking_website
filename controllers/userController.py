@@ -3,20 +3,22 @@ from flask import Flask, session, request, render_template, redirect, url_for
 import sqlite3
 import re
 
+from tools.tools_for_base import connect_to_base, close_base, commit_in_base
 import hashlib
 import secrets
 
-app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+from flask import Blueprint
 
-DATABASE = 'booking_database.db'
+user_bp = Blueprint('user', __name__) 
 
 class Checkers:
     
+    @staticmethod
     def is_valid_login(login):
-        if len(login) < 6:
+        # Добавляем проверку на None и пустую строку
+        if not login or not login.strip():
             return False
-        return True
+        return len(login) >= 6
         
     @staticmethod
     def is_valid_email(email):
@@ -25,13 +27,12 @@ class Checkers:
     
     @staticmethod
     def is_login_unique(login):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        # Исправлено: функция connect_to_base возвращает (conn, cursor)
+        conn, cursor = connect_to_base()  # <-- Ранее было cursor = connect_to_base()
         cursor.execute("SELECT * FROM User WHERE login = ?", (login,))
         user = cursor.fetchone()
-        conn.close()
+        close_base(conn)  # <-- Теперь передаем соединение для закрытия
         return user is None
-        
         
 
     @staticmethod
@@ -57,28 +58,29 @@ class Checkers:
 
     @staticmethod
     def is_email_unique(email):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        # Исправлено: правильное управление соединением
+        conn, cursor = connect_to_base()  # <-- 
         cursor.execute("SELECT * FROM User WHERE email = ?", (email,))
         user = cursor.fetchone()
-        conn.close()
+        close_base(conn)  # <-- 
         return user is None
 
 
     @staticmethod
     def check_registration(first_name, second_name, patronymic, login, email, age, password):
         errors = []
-        if not all([first_name, second_name, patronymic, email, age, password]):
+        if not all([first_name, second_name, patronymic, login, email, age, password]):
             errors.append("Заполните все поля")
         else:
+
+            try:
+                age = int(age)
+            except ValueError:
+                errors.append("Возраст должен быть числом")
+                return errors  # Возвращаем ошибки сразу
+            
             if not all(name.isalpha() for name in [first_name, second_name, patronymic]):
                 errors.append("ФИО не должны содержать цифры или символы")
- 
-            if not 18 <= age <= 100:
-                errors.append("Возраст должен быть от 18 до 100 лет")
-                
-            elif not isinstance(age, int):
-                errors.append("Возраст должен быть числом")
                 
             elif not Checkers.is_valid_email(email):
                 errors.append("Некорректный email")
@@ -97,8 +99,7 @@ class Checkers:
 
     @staticmethod
     def admin_checker(user_id):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        cursor = connect_to_base()
         cursor.execute("SELECT flag_role FROM User WHERE user_id = ?", (user_id,))
         user = cursor.fetchone()
         return user[0]
@@ -110,32 +111,30 @@ class Checkers:
 class Registration:    
     @staticmethod
     def add_to_base(first_name, second_name, patronymic, login, email, age, password, flag_role):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
+        # Исправлено: получаем и соединение, и курсор
+        conn, cursor = connect_to_base()  # <-- 
         try:
-            hashed_password = Checkers.hash_password(password)
+            hashed_password = Checkers.get_hash_password(password)
+            # Исправлено: указаны все столбцы таблицы (включая автоинкремент)
             cursor.execute('''
                 INSERT INTO User (first_name, second_name, patronymic, login, email, age, password, flag_role)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (first_name, second_name, patronymic, login, email, age, hashed_password, flag_role))
             user_id = cursor.lastrowid
-            conn.commit()
+            commit_in_base(conn)  # <-- Передаем соединение для коммита
             return True, user_id, flag_role
-        except sqlite3.IntegrityError as e:
-            return False, f"Ошибка: {e}"
         except Exception as e:
-            return False, f"Произошла ошибка: {e}"
+            return False, str(e)
         finally:
-            conn.close()
-                
-                
+            close_base(conn)  # <-- Закрываем соединение
                 
 class Authorization: 
     @staticmethod
     def comparison_to_base(login, password):
         try:
-            conn = sqlite3.connect(DATABASE)
-            cursor = conn.cursor()
+            
+            conn, cursor = connect_to_base()
+            
             cursor.execute("SELECT user_id, password, flag_role FROM User WHERE email = ? AND password = ? OR login = ? AND password = ?", (login, Checkers.get_hash_password(password), login, Checkers.get_hash_password(password)))
             user = cursor.fetchone()
             
@@ -151,10 +150,10 @@ class Authorization:
         except sqlite3.Error as e:
             return (False, None)
         finally:
-            conn.close()
+            close_base(conn)
 
 
-@app.route("/registration", methods=["GET", "POST"])
+@user_bp.route("/registration", methods=["GET", "POST"])
 def registration():
     if request.method == "POST":
         first_name = request.form.get("first_name")
@@ -171,9 +170,9 @@ def registration():
         if not errors:
             result = Registration.add_to_base(first_name, second_name, patronymic, login, email, age, password, flag_role)
             if result[0]:
-                _, user_id, flag_role = result
-                session["user"] = {"id": user_id, "email": email, "role": flag_role}
-                return redirect(url_for('main_page'))
+                    _, user_id, flag_role = result
+                    session["user"] = {"id": user_id, "email": email, "role": flag_role}
+                    return redirect(url_for('user.main_page'))  
             else:
                 errors.append(result[1])
         return render_template("registration.html", errors=errors)
@@ -182,7 +181,7 @@ def registration():
 
 
 
-@app.route("/authorization", methods=["GET", "POST"])
+@user_bp.route("/authorization", methods=["GET", "POST"])
 def authorization():
     if request.method == "POST":
         login = request.form.get("login")
@@ -201,9 +200,9 @@ def authorization():
                 }
                 
                 if auth_data['flag_role'] == 1:  # Проверка на админа
-                    return redirect(url_for('admin_page'))
+                     return redirect(url_for('user.admin_page'))
                 
-                return redirect(url_for('main_page'))
+                return redirect(url_for('user.main_page'))
             else:
                 errors.append(auth_data)  # Добавляем сообщение об ошибке
                 
@@ -211,37 +210,34 @@ def authorization():
     return render_template("authorization.html", errors=[])
 
 
-@app.route("/")
+@user_bp.route("/")
 def index():
-    return redirect(url_for('authorization'))
+    return redirect(url_for('user.authorization'))
 
-@app.route("/login")
+@user_bp.route("/login")
 def login():
     if "user" in session:
         return render_template("login.html")
-    return redirect(url_for('authorization'))
+    return redirect(url_for('user.authorization'))
 
-@app.route("/main_page")
+@user_bp.route("/main_page")
 def main_page():
     if "user" not in session:
-        return redirect(url_for('authorization'))
+        return redirect(url_for('user.authorization'))  # Было 'authorization'
     return render_template("main_page.html", user=session["user"])
 
-@app.route("/admin_page")
+@user_bp.route("/admin_page")
 def admin_page():
     if "user" not in session:
-        return redirect(url_for('authorization'))
+        return redirect(url_for('user.authorization'))
     
     user = session["user"]
     
     if user["role"] != 1:
-        return redirect(url_for('main_page'))
+        return redirect(url_for('user.main_page'))
     return render_template("admin_page.html", user=user)
 
-@app.route("/logout")
+@user_bp.route("/logout")
 def logout():
     session.pop("user", None)
-    return redirect(url_for('authorization'))
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    return redirect(url_for('user.authorization'))

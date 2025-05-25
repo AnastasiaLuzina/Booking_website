@@ -7,10 +7,10 @@
 <body>
     <nav>
         {% if session.user %}
-           <a href="{{ url_for('logout') }}">Выйти</a>  <!-- Убедитесь, что есть маршрут /logout -->
+           <a href="{{ url_for('user.logout') }}">Выйти</a>  <!-- Убедитесь, что есть маршрут /logout -->
         {% else %}
-            <a href="{{ url_for('authorization') }}">Вход</a>
-            <a href="{{ url_for('registration') }}">Регистрация</a>
+            <a href="{{ url_for('user.authorization') }}">Вход</a>
+            <a href="{{ url_for('user.registration') }}">Регистрация</a>
         {% endif %}
     </nav>
     

@@ -173,7 +173,7 @@ def registration():
             if result[0]:
                 _, user_id, flag_role = result
                 session["user"] = {"id": user_id, "email": email, "role": flag_role}
-                return redirect(url_for('main_page'))
+                return redirect(url_for('user.main_page'))
             else:
                 errors.append(result[1])
         return render_template("registration.html", errors=errors)
@@ -201,9 +201,9 @@ def authorization():
                 }
                 
                 if auth_data['flag_role'] == 1:  # Проверка на админа
-                    return redirect(url_for('admin_page'))
+                    return redirect(url_for('user.admin_page'))
                 
-                return redirect(url_for('main_page'))
+                return redirect(url_for('user.main_page'))
             else:
                 errors.append(auth_data)  # Добавляем сообщение об ошибке
                 
@@ -213,29 +213,29 @@ def authorization():
 
 @app.route("/")
 def index():
-    return redirect(url_for('authorization'))
+    return redirect(url_for('user.authorization'))
 
 @app.route("/login")
 def login():
     if "user" in session:
         return render_template("login.html")
-    return redirect(url_for('authorization'))
+    return redirect(url_for('user.authorization'))
 
 @app.route("/main_page")
 def main_page():
     if "user" not in session:
-        return redirect(url_for('authorization'))
+        return redirect(url_for('user.authorization'))
     return render_template("main_page.html", user=session["user"])
 
 @app.route("/admin_page")
 def admin_page():
     if "user" not in session:
-        return redirect(url_for('authorization'))
+        return redirect(url_for('user.authorization'))
     
     user = session["user"]
     
     if user["role"] != 1:
-        return redirect(url_for('main_page'))
+        return redirect(url_for('user.main_page'))
     return render_template("admin_page.html", user=user)
 
 @app.route("/logout")
