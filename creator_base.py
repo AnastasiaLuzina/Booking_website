@@ -1,6 +1,8 @@
 import sqlite3
 import hashlib
 from controllers.userController import Checkers
+import sys
+sys.path.append('.')
 
 connection = sqlite3.connect('booking_database.db')
 cursor = connection.cursor()
@@ -39,11 +41,13 @@ CREATE TABLE IF NOT EXISTS Equipment (
 ''')
 
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS Fhoto (
-    equipment_id INTEGER PRIMARY KEY,
-    fhoto_bytes BLOB NOT NULL,
-    hall_id INTRGER NOT NULL,
-    FOREIGN KEY(hall_id) REFERENCES Hall(hall_id)
+CREATE TABLE IF NOT EXISTS Photo (
+    photo_id INTEGER PRIMARY KEY,
+    equipment_id INTEGER NOT NULL,
+    photo_bytes BLOB NOT NULL,
+    hall_id INTEGER NOT NULL,
+    FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
+    FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
 )
 ''')
 
@@ -58,12 +62,12 @@ CREATE TABLE IF NOT EXISTS Hall (
 ''')
 
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS CrossEquipmentHalls (
-        crossEquipmentHalls_id INTEGER PRIMARY KEY,
-        equipment_id INTRGER NOT NULL,
-        hall_id INTRGER NOT NULL,
-        FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
-        FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
+CREATE TABLE IF NOT EXISTS CrossEquipmentHall (
+    cross_equipment_hall_id INTEGER PRIMARY KEY,
+    equipment_id INTEGER NOT NULL,
+    hall_id INTEGER NOT NULL,
+    FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
+    FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
 )
 ''')
 
