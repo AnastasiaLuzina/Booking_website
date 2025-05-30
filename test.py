@@ -245,3 +245,137 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
+
+
+""" from flask import Blueprint, Flask, session, request, render_template, redirect, url_for
+from tools.tools_for_base import connect_to_base, close_base, commit_in_base
+import sqlite3
+
+hall_bp = Blueprint('hall', __name__)
+
+
+class Halls_actions:
+    
+    @staticmethod
+    def get_hall(errors, hall_id)
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("SELECT title, address, description, count_likes FROM Hall WHERE hall_id = ?", (hall_id))
+            hall = cursor.fetchall()
+            close_base(conn)
+            return hall # наверное исправить
+        
+        except:
+            errors.append("Ошибка с связью бд")
+        return errors
+    
+    @staticmethod    
+    def delete_hall(hall_id):
+        errors=[]
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("DELETE FROM Equipment WHERE id = ?", (hall_id,))
+            conn.commit()
+        except:
+            errors.append("Ошибка с связью бд")
+            
+    @staticmethod           
+    def edit_hall(errors, hall_id):
+
+        try:
+            
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "UPDATE Hall SET title = ?, type = ?, status = ? WHERE id = ?",
+                (title, address, description, hall_id))
+            conn.commit()
+            close_base(conn)
+        except:
+            errors.append("Ошибка с связью бд")
+            
+    @staticmethod   
+    def add_hall(title, address, description, errors):
+        try:
+            cursor.execute(
+                    "INSERT INTO Hall (title, address, description, count_likes) VALUES (?, ?, ?, ?)",
+                    (title, address, description, 0))
+            conn.commit()
+            close_base(conn)
+        except:
+            errors.append("Ошибка с связью бд")
+        return errors
+
+        
+        
+        
+@hall_bp.route("/hall_update", mothods=["POST"])#добавление зала
+def add():
+
+    title = request.form.get("title")
+    address = request.form.get("address")
+    description = request.form.get("description")
+    
+    errors = []
+    add_hall(title, address, description, errors)
+        
+    if not errors:
+        return redirect(url_for('admin_page'))
+
+    return render_template("authorization.html", errors=errors)
+
+
+
+
+@hall_bp.route("/delete_halls", methods=["DELETE"])
+def delete():
+    if request.method == "POST":
+    
+        hall_id = request.form.get("hall_id")
+        
+        errrors = []
+          
+        if not errors:
+            try:
+                delete_hall(errors, hall_id)
+                return redirect(url_for('admin_page'))
+           except:
+                return render_template("authorization.html", errors=errors)
+               
+            
+@hall_bp.route("/hall", methods=["GET"]):
+    
+    errors = [] 
+    hall_id = request.form.get("hall_id")
+    
+    halls = get_hall(errors, hall_id)
+    
+    if not errors:
+        return redirect(url_for("admin_page"))
+    return render_template("authorization.html", errors=errors)
+    
+    
+
+
+
+@hall_bp.route("/hall/<int:hall_id>", methods=["PUT"])
+def edit():
+    title = request.form.get("title")
+    address = request.form.get("address")
+    description = request.form.get("description")
+    
+    errors = []
+    edit_hall(errors, hall_id)
+    
+    if not errors :
+            return redirect(url_for('admin_page'))
+
+    return render_template("authorization.html", errors=errors)
+
+
+     """
+    
+
+
