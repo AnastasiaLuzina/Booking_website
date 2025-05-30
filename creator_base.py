@@ -86,11 +86,24 @@ CREATE TABLE IF NOT EXISTS Booking (
 ''')
 
 
-hashed_password = Checkers.get_hash_password('1')  
+# hashed_password = Checkers.get_hash_password('1')  
+# cursor.execute('''
+#     INSERT INTO User (first_name, second_name, patronymic, login, email, age, password, flag_role)
+#     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+# ''', ('Вася', 'Пупкин', 'Пуповинович', 'admin', 'admin@example.com', 99, hashed_password, 1))
+
 cursor.execute('''
-    INSERT INTO User (first_name, second_name, patronymic, login, email, age, password, flag_role)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-''', ('Вася', 'Пупкин', 'Пуповинович', 'admin', 'admin@example.com', 99, hashed_password, 1))
+    INSERT INTO Equipment (title)
+    VALUES (?)
+''', ('Микрофоны',))
+cursor.execute('''
+    INSERT INTO Equipment (title)
+    VALUES (?)
+''', ('Зеркала',))
+cursor.execute('''
+    INSERT INTO Equipment (title)
+    VALUES (?)
+''', ('Колонки',))
 
 connection.commit()
 connection.close()
