@@ -21,6 +21,16 @@ class Checkers:
         return len(login) >= 6
         
     @staticmethod
+    def is_password_unique(password):
+       
+        hashed_password = Checkers.get_hash_password(password)
+        conn, cursor = connect_to_base()
+        cursor.execute("SELECT * FROM User WHERE password = ?", (hashed_password,))
+        user = cursor.fetchone()
+        close_base(conn)
+        return user is None
+    
+    @staticmethod
     def is_valid_email(email):
         pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         return re.match(pattern, email) is not None
@@ -90,6 +100,9 @@ class Checkers:
             
             elif not Checkers.is_valid_login(login):
                 errors.append("Логин должен быть длинее 6 символов")
+                
+            elif not Checkers.is_password_unique(password):
+                errors.append("Этот пароль уже используется другим пользователем")
                 
             elif not Checkers.is_email_unique(email):
                 errors.append("Этот email уже занят")

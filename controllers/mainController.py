@@ -28,8 +28,6 @@ def admin_page():
     
     return render_template("admin_page.html", user=user, halls=halls)
 
-@main_bp.route('/profile')
-def profile():
-    return render_template('profile.html')
+
     
     
