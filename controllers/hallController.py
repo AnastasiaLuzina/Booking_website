@@ -141,7 +141,7 @@ def edit_form(hall_id):
         return render_template("edit_form.html", hall=hall)
     return redirect(url_for('main.admin_page'))
 
-""" 
+
 @hall_bp.route("/hall_edit/<int:hall_id>", methods=["POST"])
 def edit(hall_id):
     title = request.form.get("title")
@@ -155,7 +155,7 @@ def edit(hall_id):
         return redirect(url_for('main.admin_page'))
 
     return render_template("admin_page.html", errors=errors)
- """
+
 
 
 
