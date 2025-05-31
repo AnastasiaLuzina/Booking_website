@@ -27,3 +27,9 @@ def admin_page():
     halls = Halls_actions.get_all_halls()
     
     return render_template("admin_page.html", user=user, halls=halls)
+
+@main_bp.route('/profile')
+def profile():
+    return render_template('profile.html')
+    
+    

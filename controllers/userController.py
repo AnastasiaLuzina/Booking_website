@@ -215,6 +215,7 @@ def login():
         return render_template("login.html")
     return redirect(url_for('user.authorization'))
 
+
 @user_bp.route("/logout")
 def logout():
     session.pop("user", None)
