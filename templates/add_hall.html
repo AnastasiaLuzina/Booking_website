@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Добавление нового зала</h2>
+
+{% if errors %}
+    <div style="color: red;">
+        {% for error in errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('hall.add') }}">
+    <div>
+        <label>Название:</label>
+        <input type="text" name="title" value="{{ title or '' }}">
+    </div>
+    <div>
+        <label>Адрес:</label>
+        <input type="text" name="address" value="{{ address or '' }}">
+    </div>
+    <div>
+        <label>Описание:</label>
+        <textarea name="description">{{ description or '' }}</textarea>
+    </div>
+    <button type="submit">Добавить</button>
+    <a href="{{ url_for('main.admin_page') }}">
+        <button type="button">Отмена</button>
+    </a>
+</form>
+{% endblock %}

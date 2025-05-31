@@ -7,6 +7,28 @@ hall_bp = Blueprint('hall', __name__)
 
 class Halls_actions:
     
+    @staticmethod
+    def get_hall_full(hall_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("SELECT * FROM Hall WHERE hall_id = ?", (hall_id,))
+            hall = cursor.fetchone()
+            close_base(conn)
+            return hall
+        except:
+            return None
+    
+    @staticmethod
+    def get_hall(hall_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("SELECT * FROM Hall WHERE hall_id = ?", (hall_id,))
+            hall = cursor.fetchone()
+            close_base(conn)
+            return hall
+        except:
+            return None
+    
 
     @staticmethod
     def get_all_halls():
@@ -63,7 +85,9 @@ class Halls_actions:
 
 
 
-
+@hall_bp.route("/hall_add", methods=["GET"])
+def add_form():
+    return render_template("add_hall.html")
 
 
 @hall_bp.route("/hall_update", methods=["POST"])
@@ -71,16 +95,16 @@ def add():
     title = request.form.get("title")
     address = request.form.get("address")
     description = request.form.get("description")
-    
     errors = []
-    Halls_actions.add_hall(title, address, description, errors)
-        
-    if not errors:
-        # Перенаправляем на admin_page после успешного добавления
-        return redirect(url_for('user.admin_page'))
     
-    # При ошибке рендерим страницу с ошибками
-    return render_template("authorization.html", errors=errors)
+    if not title or not address:
+        errors.append("Название и адрес обязательны")
+    else:
+        Halls_actions.add_hall(title, address, description, errors)
+    
+    if not errors:
+        return redirect(url_for('main.admin_page'))
+    return render_template("add_hall.html", errors=errors, title=title, address=address, description=description)
 
 
 @hall_bp.route("/delete_hall", methods=["POST"])
@@ -90,26 +114,35 @@ def delete():
     Halls_actions.delete_hall(errors, hall_id)
     
     if not errors:
-        return redirect(url_for('user.admin_page'))
+        return redirect(url_for('main.admin_page'))
     
     return render_template("admin_page.html", errors=errors)
    
    
            
-@hall_bp.route("/hall", methods=["GET"])  # Убрано лишнее двоеточие
+@hall_bp.route("/hall", methods=["GET"])
 def get_hall():
-    errors = [] 
-    hall_id = request.args.get("hall_id")  # Исправлено на args для GET-запроса
+    errors = []
+    hall_id = request.args.get("hall_id")
+    hall = Halls_actions.get_hall(hall_id)
     
-    halls = Halls_actions.get_hall(errors, hall_id)  # Добавлен вызов через класс
+    if hall:
+        return render_template("hall_detail.html", hall=hall)
     
-    if not errors:
-        return redirect(url_for("admin_page"))
+    errors.append("Зал не найден")
     return render_template("admin_page.html", errors=errors)
 
 
 
-@hall_bp.route("/hall/<int:hall_id>", methods=["POST"])
+@hall_bp.route("/hall_edit/<int:hall_id>", methods=["GET"])
+def edit_form(hall_id):
+    hall = Halls_actions.get_hall(hall_id)
+    if hall:
+        return render_template("edit_form.html", hall=hall)
+    return redirect(url_for('main.admin_page'))
+
+""" 
+@hall_bp.route("/hall_edit/<int:hall_id>", methods=["POST"])
 def edit(hall_id):
     title = request.form.get("title")
     address = request.form.get("address")
@@ -119,10 +152,10 @@ def edit(hall_id):
     Halls_actions.edit_hall(errors, hall_id, title, address, description)
     
     if not errors:
-        return redirect(url_for('user.admin_page'))
+        return redirect(url_for('main.admin_page'))
 
     return render_template("admin_page.html", errors=errors)
-
+ """
 
 
 
