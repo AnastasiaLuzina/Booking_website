@@ -5,51 +5,73 @@
 <p>Добро пожаловать, {{ user.login }}!</p>
 
 {% if errors %}
-    <div style="color: red;">
-        {% for error in errors %}
-            <p>{{ error }}</p>
-        {% endfor %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
     </div>
 {% endif %}
 
 <h2>Управление залами</h2>
 
 <div>
-    <a href="{{ url_for('hall.add_form') }}">
-        <button>Добавить новый зал</button>
+    <a href="{{ url_for('hall.add_form') }}" class="btn btn-primary mb-2">
+        Добавить новый зал
     </a>
 </div>
 
 <h3>Список залов</h3>
 {% if halls %}
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Адрес</th>
-            <th>Действия</th>
-        </tr>
-        {% for hall in halls %}
-        <tr>
-            <td>{{ hall[0] }}</td>
-            <td>{{ hall[1] }}</td>
-            <td>{{ hall[2] }}</td>
-            <td>
-                <a href="{{ url_for('hall.get_hall', hall_id=hall[0]) }}">
-                    <button>Просмотреть</button>
-                </a>
-                <a href="{{ url_for('hall.edit_form', hall_id=hall[0]) }}">
-                    <button>Редактировать</button>
-                </a>
-                <form method="POST" action="{{ url_for('hall.delete') }}">
-                    <input type="hidden" name="hall_id" value="{{ hall[0] }}">
-                    <button type="submit">Удалить</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Адрес</th>
+                <th>Действия с залом</th>
+                <th>Оборудование</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hall in halls %}
+            <tr>
+                <td>{{ hall[0] }}</td>
+                <td>{{ hall[1] }}</td>
+                <td>{{ hall[2] }}</td>
+                <td>
+                    <a href="{{ url_for('hall.get_hall', hall_id=hall[0]) }}" class="btn btn-sm btn-info">
+                        Просмотреть
+                    </a>
+                    <a href="{{ url_for('hall.edit_form', hall_id=hall[0]) }}" class="btn btn-sm btn-warning">
+                        Редактировать
+                    </a>
+                    <form method="POST" action="{{ url_for('hall.delete') }}" style="display:inline;">
+                        <input type="hidden" name="hall_id" value="{{ hall[0] }}">
+                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                    </form>
+                </td>
+                <td>
+                    <a href="{{ url_for('equipment.view_equipment', hall_id=hall[0]) }}" class="btn btn-sm btn-info">
+                        Просмотр оборудования
+                    </a>
+                    <a href="{{ url_for('equipment.add_form', hall_id=hall[0]) }}" class="btn btn-sm btn-success">
+                        Добавить оборудование
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 {% else %}
     <p>Залы не найдены</p>
 {% endif %}
+
+<h2>Управление оборудованием</h2>
+<div>
+    <a href="{{ url_for('equipment.view_all_equipment') }}" class="btn btn-primary mb-3">
+        Просмотреть все оборудование
+    </a>
+</div>
 {% endblock %}
