@@ -1,42 +1,38 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="container">
-    <h2>Все оборудование</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Все оборудование</title>
+</head>
+<body>
+    <h1>Все оборудование</h1>
     
-    <a href="{{ url_for('main.admin_page') }}" class="btn btn-secondary mb-3">
-        Назад в админ-панель
-    </a>
+    <a href="{{ url_for('main.admin_page') }}">Назад в админ-панель</a>
     
     {% if equipment_list %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Количество</th>
-                <th>Описание</th>
-                <th>Зал</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for equipment in equipment_list %}
-            <tr>
-                <td>{{ equipment[0] }}</td>  <!-- equipment_id -->
-                <td>{{ equipment[1] }}</td>  <!-- name -->
-                <td>{{ equipment[2] }}</td>  <!-- count -->
-                <td>{{ equipment[3] }}</td>  <!-- description -->
-                <td>{{ equipment[4] }}</td>  <!-- hall title -->
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5">Оборудование не найдено</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Количество</th>
+            <th>Описание</th>
+            <th>Зал</th>
+        </tr>
+        {% for equipment in equipment_list %}
+        <tr>
+            <td>{{ equipment[0] }}</td>
+            <td>{{ equipment[1] }}</td>
+            <td>{{ equipment[2] }}</td>
+            <td>{{ equipment[3] }}</td>
+            <td>{{ equipment[4] }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">Оборудование не найдено</td>
+        </tr>
+        {% endfor %}
     </table>
     {% else %}
     <p>Оборудование не найдено</p>
     {% endif %}
-</div>
-{% endblock %}
+</body>
+</html>

@@ -1,39 +1,39 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="container">
-    <h2>Редактирование оборудования</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать оборудование</title>
+</head>
+<body>
+    <h1>Редактирование оборудования</h1>
     
     {% if errors %}
-    <div class="alert alert-danger">
-        <ul>
-            {% for error in errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+        <div>
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
     
     <form method="POST" action="{{ url_for('equipment.edit', equipment_id=equipment[0]) }}">
         <input type="hidden" name="hall_id" value="{{ equipment[1] }}">
         
-        <div class="mb-3">
-            <label class="form-label">Название оборудования:</label>
-            <input type="text" name="name" class="form-control" value="{{ equipment[2] }}" required>
-        </div>
+        <label>Название оборудования:</label>
+        <input type="text" name="name" value="{{ equipment[2] }}" required>
+        <br>
         
-        <div class="mb-3">
-            <label class="form-label">Количество:</label>
-            <input type="number" name="count" class="form-control" value="{{ equipment[3] }}" required min="1">
-        </div>
+        <label>Количество:</label>
+        <input type="number" name="count" value="{{ equipment[3] }}" required min="1">
+        <br>
         
-        <div class="mb-3">
-            <label class="form-label">Описание:</label>
-            <textarea name="description" class="form-control">{{ equipment[4] }}</textarea>
-        </div>
+        <label>Описание:</label>
+        <textarea name="description">{{ equipment[4] }}</textarea>
+        <br>
         
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a href="{{ url_for('equipment.view_equipment', hall_id=equipment[1]) }}" class="btn btn-secondary">Отмена</a>
+        <button type="submit">Сохранить</button>
     </form>
-</div>
-{% endblock %}
+    
+    <a href="{{ url_for('equipment.view_equipment', hall_id=equipment[1]) }}">Отмена</a>
+</body>
+</html>
