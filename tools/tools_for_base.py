@@ -5,11 +5,11 @@ DATABASE = 'booking_database.db'
 
 def connect_to_base():
     conn = sqlite3.connect(DATABASE)
-    return conn, conn.cursor()  # Возвращаем и соединение, и курсор
+    return conn, conn.cursor() 
 
 def close_base(conn):
     if conn:
-        conn.close()  # Закрываем соединение
+        conn.close() 
 
 def commit_in_base(conn):
     if conn:

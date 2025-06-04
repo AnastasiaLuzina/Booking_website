@@ -97,11 +97,13 @@ class Checkers:
 
     @staticmethod
     def admin_checker(user_id):
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
-        cursor.execute("SELECT flag_role FROM User WHERE user_id = ?", (user_id,))
-        user = cursor.fetchone()
-        return user[0]
+        conn, cursor = connect_to_base()  # Распаковываем соединение и курсор
+        try:
+            cursor.execute("SELECT flag_role FROM User WHERE user_id = ?", (user_id,))
+            user = cursor.fetchone()
+            return user[0] if user else 0
+        finally:
+            close_base(conn)
             
 
 
