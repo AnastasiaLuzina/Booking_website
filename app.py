@@ -17,5 +17,6 @@ app.register_blueprint(profile_bp)
 app.register_blueprint(equipment_bp)
 app.register_blueprint(booking_bp)
 app.register_blueprint(photo_bp)
+
 if __name__ == "__main__":
     app.run(debug=True)

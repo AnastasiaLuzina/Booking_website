@@ -2,6 +2,8 @@ from flask import Blueprint, session, render_template, redirect, url_for, reques
 from datetime import datetime, timedelta, time, date
 import sqlite3
 from collections import defaultdict
+from tools.tools_for_base import connect_to_base, close_base, commit_in_base
+from hallController import Halls_actions
 import json
 
 booking_bp = Blueprint('booking', __name__)
@@ -20,7 +22,7 @@ class BookingActions:
         end_time = time(21, 0)
         
         while current_time < end_time:
-            slot_end = (datetime.combine(date.today(), current_time) + timedelta(minutes=30)
+            slot_end = (datetime.combine(date.today(), current_time) + timedelta(minutes=30))
             slot_end_time = slot_end.time()
             
             if slot_end_time > end_time:
