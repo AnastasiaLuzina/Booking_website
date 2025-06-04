@@ -35,6 +35,7 @@ class EquipmentActions:
 def view_equipment():
     hall_id = request.args.get("hall_id")  # Получаем ID зала из URL-параметра
     equipment_list = EquipmentActions.get_all_equipment_for_hall(hall_id)
+    errors = []
     
     if equipment_list:
         return render_template("hall_equipment.html", 
