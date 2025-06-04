@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать оборудование</title>
+</head>
+<body>
+    <h1>Редактирование оборудования</h1>
+    
+    {% if errors %}
+        <div>
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('equipment.edit', equipment_id=equipment[0]) }}">
+        <input type="hidden" name="hall_id" value="{{ equipment[1] }}">
+        
+        <label>Название оборудования:</label>
+        <input type="text" name="name" value="{{ equipment[2] }}" required>
+        <br>
+        
+        <label>Количество:</label>
+        <input type="number" name="count" value="{{ equipment[3] }}" required min="1">
+        <br>
+        
+        <label>Описание:</label>
+        <textarea name="description">{{ equipment[4] }}</textarea>
+        <br>
+        
+        <button type="submit">Сохранить</button>
+    </form>
+    
+    <a href="{{ url_for('equipment.view_equipment', hall_id=equipment[1]) }}">Отмена</a>
+</body>
+</html>
