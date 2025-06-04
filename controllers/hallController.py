@@ -2,7 +2,7 @@
 from flask import Blueprint, session, request, render_template, redirect, url_for
 from tools.tools_for_base import connect_to_base, close_base
 
-import sqlite3
+
 
 hall_bp = Blueprint('hall', __name__)
 
@@ -189,4 +189,4 @@ def edit(hall_id):
 
 
 
->>>>>>> nastay_fix_registration
+
