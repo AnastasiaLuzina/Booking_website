@@ -4,20 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Авторизация</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <!-- Шапка -->
-    <header>
-        <div class="logo">LET'S DANCE</div>
-        <nav>
-            <ul>
-                <li><a href="#">Главная</a></li>
-                <li><a href="#">Каталог</a></li>
-                <li><a href="#">О сервисе</a></li>
-            </ul>
-        </nav>
-    </header>
+    {% include 'header.html' %}
 
     <!-- Основное содержимое -->
     <main>
