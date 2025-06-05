@@ -1,30 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Авторизация{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_auto.css') }}">
+    <style>
+        .error-message {
+            color: #d9534f;
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .error-message p {
+            margin: 5px 0;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-    <h2>Вход в систему</h2>
-    
-    {% if errors %}
-        <div class="alert error">
-            {% for error in errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-    
-    <form method="POST" action="{{ url_for('authorization') }}">  <!-- Исправлено -->
-        <div class="form-group">
-            <label> Логин:</label>
-            <input type="login" name="login" required
-                   value="{{ request.form.login or '' }}">
-        </div>
-        
-        <div class="form-group">
-            <label>Пароль:</label>
-            <input type="password" name="password" required>
-        </div>
-        
-        <button type="submit">Войти</button>
-    </form>
+<main>
+    <div class="login-container">
+        <h2>Авторизация</h2>
+        {% if errors %}
+            <div class="error-message">
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('user.authorization') }}">
+            <label for="login">Учетная запись</label>
+            <input type="text" id="login" name="login" placeholder="qwerty435"
+                   value="{{ request.form.login if request.form.login else '' }}">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" placeholder="password123">
+            <button type="submit">Войти</button>
+            <p class="register-link">Нет аккаунта? <a href="{{ url_for('user.registration') }}">Регистрация</a></p>
+        </form>
+    </div>
+</main>
+<footer>
+    <div class="footer-content">
+        <span></span>
+        <span></span>
+    </div>
+</footer>
 {% endblock %}
