@@ -2,6 +2,8 @@ from flask import Blueprint, session, request, render_template, redirect, url_fo
 from tools.tools_for_base import connect_to_base, close_base
 import sqlite3
 
+from .hallController import Halls_actions
+
 equipment_bp = Blueprint('equipment', __name__)
 
 

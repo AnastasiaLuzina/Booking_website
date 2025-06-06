@@ -3,7 +3,9 @@ from datetime import datetime, timedelta, time, date
 import sqlite3
 from collections import defaultdict
 from tools.tools_for_base import connect_to_base, close_base, commit_in_base
-from hallController import Halls_actions
+
+from .hallController import Halls_actions
+
 import json
 
 booking_bp = Blueprint('booking', __name__)

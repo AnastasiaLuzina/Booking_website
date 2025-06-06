@@ -5,7 +5,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route("/")
 def index():
-    return redirect(url_for('user.authorization'))
+    return redirect(url_for('user.registration'))
 
 @main_bp.route("/main_page")
 def main_page():
