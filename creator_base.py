@@ -10,12 +10,12 @@ connection = sqlite3.connect('booking_database.db')
 cursor = connection.cursor()
 
 # Удаление существующих таблиц
-cursor.execute("DROP TABLE IF EXISTS User")  
-cursor.execute("DROP TABLE IF EXISTS Hall") 
-cursor.execute("DROP TABLE IF EXISTS Booking")  
-cursor.execute("DROP TABLE IF EXISTS Photo")  # Исправлено Fhoto -> Photo
-cursor.execute("DROP TABLE IF EXISTS Equipment")  
-cursor.execute("DROP TABLE IF EXISTS CrossEquipmentHall")
+# cursor.execute("DROP TABLE IF EXISTS User")  
+# cursor.execute("DROP TABLE IF EXISTS Hall") 
+# cursor.execute("DROP TABLE IF EXISTS Booking")  
+# cursor.execute("DROP TABLE IF EXISTS Photo")  # Исправлено Fhoto -> Photo
+# cursor.execute("DROP TABLE IF EXISTS Equipment")  
+# cursor.execute("DROP TABLE IF EXISTS CrossEquipmentHall")
 
 # Создание таблиц
 cursor.execute('''
@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS Equipment (
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Photo (
     photo_id INTEGER PRIMARY KEY,
-    equipment_id INTEGER NOT NULL,
+    
     photo_bytes BLOB NOT NULL,
     hall_id INTEGER NOT NULL,
     FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
-    FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
+    
 )
 ''')
 
