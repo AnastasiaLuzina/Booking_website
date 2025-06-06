@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <div class="logo">LET'S DANCE</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Главная</a></li>
+                <li><a href="#">Каталог</a></li>
+                <li><a href="#">О сервисе</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Основное содержимое -->
+    <main>
+        <div class="container">
+            <section class="registration-form">
+                <h2>Регистрация</h2>
+                <form id="registrationForm">
+                    <!-- Персональные данные -->
+                    <h3>Введите ваши персональные данные</h3>
+                    <div class="form-group">
+                        <label for="lastName">Фамилия</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Иванов">
+                    </div>
+                    <div class="form-group">
+                        <label for="patronymic">Отчество</label>
+                        <input type="text" id="patronymic" name="patronymic" placeholder="Иванович">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Имя</label>
+                        <input type="text" id="firstName" name="firstName" placeholder="Иван">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Возраст</label>
+                        <input type="number" id="age" name="age" placeholder="22">
+                    </div>
+
+                    <!-- Данные для входа -->
+                    <h3>Введите свою почту и придумайте пароль</h3>
+                    <div class="form-group">
+                        <label for="email">Почта</label>
+                        <input type="email" id="email" name="email" placeholder="letsdance@mail.ru">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <input type="password" id="password" name="password" placeholder="password1234">
+                    </div>
+
+                   <p class="error-message">не все поля заполнены</p>
+
+                    <!-- Кнопка отправки -->
+                    <button type="submit" class="submit-btn">Создать аккаунт</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <hr>
+            <p class="contacts">Контакты</p>
+            <p class="copyright">&copy; 2023 LET'S DANCE</p>
+        </div>
+    </footer>
+</body>
+</html>
