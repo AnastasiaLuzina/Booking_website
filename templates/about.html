@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <!-- Основное содержимое -->
+    <main>
+        <div class="login-container">
+            
+            
+            <h1>Наша команда</h1>
+    
+            <div class="team-section">
+                <!-- Первый участник -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='Аня.png') }}"
+                        alt="Валитова Анна" class="member-photo">
+                    <div class="member-info">
+                        <h3 class="member-name">Валитова Анна</h3>
+                        <p class="member-position">Бэкенд-разработчик</p>
+                        <p class="member-position">Тимлид</p>
+                        
+                        <p class="member-bio"> Любовь и помощь всем моим любимкам. Опыт имеется. Ну как там с проектом?</p>
+                    </div>
+                </div>
+                
+                <!-- Второй участник -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='Настя.png') }}" 
+                        alt="Лузина Анастасия" class="member-photo">
+                    <div class="member-info">
+                        <h3 class="member-name">Лузина Анастасия</h3>
+                        <p class="member-position">Бэкенд-разработчик</p>
+                        <p class="member-position">Тестировщик</p>
+                        <p class="member-bio">Её код работает. Не трогайте его. И не дышите на него</p>
+                    </div>
+                </div>
+                
+                <!-- Третий участник -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='Соня.png') }}" 
+                        alt="Салюк София" class="member-photo">
+                    <div class="member-info">
+                        <h3 class="member-name">Салюк София</h3>
+                        <p class="member-position">Фронтенд-разработчик</p>
+                        <p class="member-position">Тестировщик</p>
+                        <p class="member-bio">Вы думали это она программирует на css и html? Нет. Это css и html программирует на ней.</p>
+                    </div>
+                </div>
+                
+                <!-- Четвертый участник -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='Лада.png') }}" 
+                        alt="Малышева Лада" class="member-photo">
+                    <div class="member-info">
+                        <h3 class="member-name">Малышева Лада</h3>
+                        <p class="member-position">Фронтенд-разработчик</p>
+                        <p class="member-position">Дизайнер</p>
+                        <p class="member-bio">Сделала ещё один макет. Но что же это? О нет! Опять надо сделать текст покрупнее...</p>
+                    </div>
+                </div>
+            </div>
+            <h1>Средства разработки</h1>
+            <div class="team-section">
+                <!-- Первый участник -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='vs.png') }}"
+                        alt="Visual Studio Code" class="member-photo">
+                    <div class="member-info">
+                        <h3 class="member-name">Visual Studio Code</h3>
+                        <p class="member-position">Среда разработки</p>
+                        
+                    </div>
+                </div>
+                
+                <!-- Второй участник -->
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='pyt.png') }}" 
+                        alt="Python" class="member-photo">
+                    <div class="member-info">
+                        <h3 class="member-name">Python</h3>
+                        <p class="member-position">Язык программирования</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="footer-content">
+            <span></span>
+            <span></span>
+        </div>
+    </footer>
+</body>
+</html>
