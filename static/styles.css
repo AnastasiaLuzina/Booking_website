@@ -38,6 +38,18 @@ nav ul li a {
     font-size: 16px;
 }
 
+/* Подчеркивание активной ссылки в меню */
+nav ul li a.active {
+    color: #333; /* Цвет текста */ /* Цвет подчеркивания */
+    text-decoration: underline; 
+    text-decoration-color: #007bff;
+    text-decoration-thickness: 3px;
+}
+
+nav ul a:hover {
+    color: #0056b3;
+}
+
 /* Основное содержимое */
 main {
     flex-grow: 1;

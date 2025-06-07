@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
-    <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='registration.css') }}">
 </head>
 <body>
-    <!-- Шапка -->
+    <!-- Шапка
     <header>
         <div class="logo">LET'S DANCE</div>
         <nav>
@@ -17,7 +17,9 @@
                 <li><a href="#">О сервисе</a></li>
             </ul>
         </nav>
-    </header>
+    </header> -->
+
+    {% include 'header.html' %}
 
     <!-- Основное содержимое -->
     <main>
