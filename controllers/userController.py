@@ -224,8 +224,8 @@ def authorization():
             else:
                 errors.append(auth_data)  # Добавляем сообщение об ошибке
                 
-        return render_template("authorization.html", errors=errors)
-    return render_template("authorization.html", errors=[])
+        return render_template("index.html", errors=errors)
+    return render_template("index.html", errors=[])
 
 @user_bp.route("/login")
 def login():

@@ -1,10 +1,22 @@
 <header>
     <div class="logo">LET'S DANCE</div>
     <nav>
-        <ul>
-            <li><a href="{{ url_for('main.main_page') }}">Главная</a></li>
-            <li><a href="{{ url_for('main.catalog') }}">Каталог</a></li>
-            <li><a href="{{ url_for('main.servis_info') }}">О сервисе</a></li>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}active{% endif %}">Главная</a></li>
+            <li><a href="{{ url_for('main.catalog_page') }}" class="{% if request.endpoint == 'main.catalog_page' %}active{% endif %}">Каталог</a></li>
+            <li><a href="{{ url_for('main.about_page') }}" class="{% if request.endpoint == 'main.about_page' %}active{% endif %}">О сервисе</a></li>
+        
+
+        {% if user %}
+            <!-- Показываем для авторизованных пользователей -->
+            <li><a href="{{ url_for('profile.profile') }}" class="{% if request.endpoint == 'profile.profile' %}active{% endif %}">Личный кабинет</a></li>
+            
+        {% else %}
+            <!-- Показываем для гостей -->
+            <li><a href="{{ url_for('user.authorization') }}" class="button">Войти</a></li>
+            
+        {% endif %}
         </ul>
     </nav>
 </header>
+

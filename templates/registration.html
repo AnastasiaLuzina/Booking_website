@@ -4,64 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/registration.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='registration.css') }}">
 </head>
 <body>
-    <div class="auth-container">
-        <!-- Исправлено user_bp на user -->
-        <form class="auth-form" method="POST" action="{{ url_for('user.registration') }}">
-            <h1 class="auth-title">Регистрация</h1>
-            
-            {% if errors %}
-                <div class="error-container">
-                    {% for error in errors %}
-                        <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+    <!-- Шапка
+    <header>
+        <div class="logo">LET'S DANCE</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Главная</a></li>
+                <li><a href="#">Каталог</a></li>
+                <li><a href="#">О сервисе</a></li>
+            </ul>
+        </nav>
+    </header> -->
 
-            <div class="input-group">
-                <label>Имя</label>
-                <input type="text" name="first_name" placeholder="Введите ваше имя" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Фамилия</label>
-                <input type="text" name="second_name" placeholder="Введите вашу фамилию" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Отчество</label>
-                <input type="text" name="patronymic" placeholder="Введите ваше отчество">
-            </div>
-            
-            <div class="input-group">
-                <label>Логин</label>
-                <input type="text" name="login" placeholder="Придумайте логин" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" name="email" placeholder="example@gmail.com" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Возраст</label>
-                <input type="number" name="age" placeholder="Ваш возраст" min="1" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Пароль</label>
-                <input type="password" name="password" placeholder="Создайте пароль" required>
-            </div>
-            
-            <button type="submit" class="auth-button">Зарегистрироваться</button>
-            
-            <div class="auth-footer">
-                <!-- Исправлено здесь тоже -->
-                Уже есть аккаунт? <a href="{{ url_for('user.login') }}">Войти</a>
-            </div>
-        </form>
-    </div>
+    {% include 'header.html' %}
+
+    <!-- Основное содержимое -->
+    <main>
+        <div class="container">
+            <section class="registration-form">
+                <h2>Регистрация</h2>
+                <form id="registrationForm">
+                    <!-- Персональные данные -->
+                    <h3>Введите ваши персональные данные</h3>
+                    <div class="form-group">
+                        <label for="lastName">Фамилия</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Иванов">
+                    </div>
+                    <div class="form-group">
+                        <label for="patronymic">Отчество</label>
+                        <input type="text" id="patronymic" name="patronymic" placeholder="Иванович">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Имя</label>
+                        <input type="text" id="firstName" name="firstName" placeholder="Иван">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Возраст</label>
+                        <input type="number" id="age" name="age" placeholder="22">
+                    </div>
+
+                    <!-- Данные для входа -->
+                    <h3>Введите свою почту и придумайте пароль</h3>
+                    <div class="form-group">
+                        <label for="email">Почта</label>
+                        <input type="email" id="email" name="email" placeholder="letsdance@mail.ru">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <input type="password" id="password" name="password" placeholder="password1234">
+                    </div>
+
+                   <p class="error-message">не все поля заполнены</p>
+
+                    <!-- Кнопка отправки -->
+                    <button type="submit" class="submit-btn">Создать аккаунт</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class = "footer_orientation">
+            <hr>
+            <p class="contacts">Контакты</p>
+            <p class="copyright">&copy; 2023 LET'S DANCE</p>
+        </div>
+    </footer>
 </body>
 </html>
