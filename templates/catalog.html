@@ -7,29 +7,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/catalog.css') }}">
 </head>
 <body>
-    <header>
-        <h1>LET'S DANCE</h1>
-        <nav>
-            <a href="/">Главная</a> |
-            <a href="/catalog">Каталог</a> |
-            <a href="#">О сервисе</a> |
-            <a href="#">Личный кабинет</a>
-        </nav>
-    </header>
+    {% include 'header.html' %}
     <main>
         <h2 style="text-align: center; margin-top: 20px;">Каталог залов</h2>
         <div class="catalog">
-            {% for hall in halls %}
+            {% for item in halls %}
             <div class="hall-card">
-                <h3>{{ hall.title }}</h3>
+                <h3>{{ item.title }}</h3>
                 
-                <div class="hall-photos">
-                    {% for photo in hall.photos %}
-                    <img src="data:image/jpeg;base64,{{ photo }}" alt="{{ hall.title }}">
-                    {% endfor %}
+                {% if item.photo %}
+                <div class="hall-photo">
+                    <img src="data:image/jpeg;base64,{{ item.photo }}" alt="{{ item.title }}">
                 </div>
+                {% else %}
+                <div class="no-photo">Изображение отсутствует</div>
+                {% endif %}
                 
-                <a href="/hall?hall_id={{ hall.hall_id }}">Подробнее</a>
+                <a href="/hall?hall_id={{ item.hall_id }}">Подробнее</a>
             </div>
             {% endfor %}
         </div>

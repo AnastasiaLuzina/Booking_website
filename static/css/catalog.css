@@ -1,28 +1,111 @@
+/* Шапка */
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+}
+header {
+    background-color: #e6f7ff;
+    padding: 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+/* static/css/catalog.css */
 .catalog {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     padding: 20px;
+    justify-content: center;
 }
 
 .hall-card {
-    border: 1px solid #ddd;
+    border: 1px solid #1e6bdc;
     border-radius: 8px;
     padding: 15px;
     width: 300px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.hall-photos {
+    box-shadow: 0 4px 8px rgba(30, 107, 220, 0.2);
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
+    flex-direction: column;
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.hall-photos img {
-    width: 100px;
-    height: 100px;
+.hall-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(30, 107, 220, 0.3);
+}
+
+.hall-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #0d47a1;
+    font-size: 1.3em;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e3f2fd;
+}
+
+.hall-photo {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 6px;
+    background-color: #f5f7fa;
+    min-height: 200px;
+    max-height: 250px;
+}
+
+.hall-photo img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.hall-card:hover .hall-photo img {
+    transform: scale(1.05);
+}
+
+.no-photo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #546e7a;
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+}
+
+.hall-card a {
+    display: block;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #1e6bdc, #0d47a1);
+    color: white;
+    text-align: center;
+    text-decoration: none;
     border-radius: 4px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.hall-card a:hover {
+    background: linear-gradient(135deg, #0d47a1, #1e6bdc);
 }

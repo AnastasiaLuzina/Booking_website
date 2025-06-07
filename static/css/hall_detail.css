@@ -1,0 +1,199 @@
+/* Основные стили */
+.hall-detail-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.hall-detail-container h1 {
+    color: #0d47a1;
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e3f2fd;
+}
+
+.hall-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+/* Секция с фотографиями */
+.hall-photos-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.main-photo {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+}
+
+.main-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.main-photo:hover img {
+    transform: scale(1.03);
+}
+
+.thumbnail-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.thumbnail:hover {
+    border-color: #1e6bdc;
+    transform: translateY(-5px);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Секция с информацией */
+.hall-info-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.info-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.info-item i {
+    color: #1e6bdc;
+    font-size: 1.2rem;
+    margin-right: 10px;
+    min-width: 24px;
+}
+
+.equipment-list {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    margin: 15px 0 25px;
+    padding-left: 20px;
+}
+
+.equipment-list li {
+    margin-bottom: 8px;
+}
+
+/* Кнопки и элементы управления */
+.likes-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.likes-count {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #0d47a1;
+}
+
+.like-button {
+    padding: 8px 20px;
+    background: #f5f7fa;
+    border: 1px solid #1e6bdc;
+    border-radius: 4px;
+    color: #0d47a1;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.like-button:hover {
+    background: #e3f2fd;
+}
+
+.like-button.liked {
+    background: #ffebee;
+    border-color: #f44336;
+    color: #f44336;
+}
+
+.book-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #1e6bdc, #0d47a1);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.book-button:hover {
+    background: linear-gradient(135deg, #0d47a1, #1e6bdc);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 71, 161, 0.3);
+}
+
+/* Календарь/расписание */
+.schedule {
+    margin-top: 20px;
+}
+
+.date-picker {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #b0bec5;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hall-content {
+        flex-direction: column;
+    }
+    
+    .main-photo {
+        height: 300px;
+    }
+    
+    .equipment-list {
+        columns: 1;
+    }
+}

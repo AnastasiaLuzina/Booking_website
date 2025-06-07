@@ -14,32 +14,21 @@ class Halls_actions:
     @staticmethod
     def get_halls_with_photos():
         conn, cursor = connect_to_base()
-        # Убираем GROUP BY и выбираем все фотографии
         cursor.execute('''
             SELECT h.hall_id, h.title, p.photo_bytes 
             FROM Hall h
             LEFT JOIN Photo p ON h.hall_id = p.hall_id
+            ORDER BY h.hall_id, p.photo_id
         ''')
         halls_data = cursor.fetchall()
         close_base(conn)
         
-        # Группируем фотографии по залам
-        halls_dict = {}
-        for hall_id, title, photo_bytes in halls_data:
-            if hall_id not in halls_dict:
-                halls_dict[hall_id] = {
-                    'hall_id': hall_id,
-                    'title': title,
-                    'photos': []
-                }
-            if photo_bytes:
-                halls_dict[hall_id]['photos'].append(
-                    base64.b64encode(photo_bytes).decode('utf-8')
-                )
+        return [{
+            'hall_id': hall_id,
+            'title': title,
+            'photo': base64.b64encode(photo_bytes).decode('utf-8') if photo_bytes else None
+        } for hall_id, title, photo_bytes in halls_data]
         
-        return list(halls_dict.values())
-    
-    
     @staticmethod
     def get_hall_full(hall_id):
         try:
@@ -61,7 +50,23 @@ class Halls_actions:
             return hall
         except:
             return None
-    
+        
+    @staticmethod
+    def get_equipment_for_hall(hall_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("""
+                SELECT e.title 
+                FROM Equipment e
+                JOIN CrossEquipmentHall ceh ON e.equipment_id = ceh.equipment_id
+                WHERE ceh.hall_id = ?
+            """, (hall_id,))
+            equipment = cursor.fetchall()
+            close_base(conn)
+            return equipment
+        except:
+            return []
+        
 
     @staticmethod
     def get_all_halls():
@@ -160,11 +165,22 @@ def get_hall():
     hall = Halls_actions.get_hall(hall_id)
     
     if hall:
-        return render_template("hall_detail.html", hall=hall)
+        # Получаем фотографии зала
+        conn, cursor = connect_to_base()
+        cursor.execute("SELECT photo_id FROM Photo WHERE hall_id = ?", (hall_id,))
+        photos = cursor.fetchall()
+        close_base(conn)
+        
+        # Получаем оборудование зала
+        equipment_list = Halls_actions.get_equipment_for_hall(hall_id)
+        
+        return render_template("hall_detail.html", 
+                              hall=hall, 
+                              photos=photos,
+                              equipment_list=equipment_list)
     
     errors.append("Зал не найден")
     return render_template("admin_page.html", errors=errors)
-
 
 
 @hall_bp.route("/hall_edit/<int:hall_id>", methods=["GET"])
