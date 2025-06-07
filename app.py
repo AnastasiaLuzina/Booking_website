@@ -6,6 +6,7 @@ from controllers.profileController import profile_bp
 from controllers.equipmentController import equipment_bp
 from controllers.bookingController import booking_bp
 from controllers.photoController import photo_bp
+
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -16,6 +17,8 @@ app.register_blueprint(main_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(equipment_bp)
 app.register_blueprint(booking_bp)
+
+# ИСПРАВЛЕННАЯ РЕГИСТРАЦИЯ: убрать url_prefix
 app.register_blueprint(photo_bp)
 
 if __name__ == "__main__":

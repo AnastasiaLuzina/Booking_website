@@ -275,7 +275,7 @@ def confirm_booking():
         )
         
         if success:
-            # Очищаем сессию
+
             session.pop('booking_data', None)
             session.pop('selected_start_time', None)
             session.pop('booking_confirmation', None)

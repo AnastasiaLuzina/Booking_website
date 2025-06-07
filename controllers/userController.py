@@ -87,7 +87,7 @@ class Checkers:
                 age = int(age)
             except ValueError:
                 errors.append("Возраст должен быть числом")
-                return errors  # Возвращаем ошибки сразу
+                age = 0 # Возвращаем ошибки сразу
             
             if not all(name.isalpha() for name in [first_name, second_name, patronymic]):
                 errors.append("ФИО не должны содержать цифры или символы")
@@ -230,7 +230,7 @@ def authorization():
 @user_bp.route("/login")
 def login():
     if "user" in session:
-        return render_template("login.html")
+        return render_template("authorization.html")
     return redirect(url_for('user.authorization'))
 
 

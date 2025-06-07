@@ -116,7 +116,7 @@ def password():
     if Profile_actions.change_password(user_id, new_password, errors):
         flash("Пароль успешно изменен", "success")
     else:
-        # Передаем ошибки в сессию для отображения в шаблоне
+    
         session['profile_errors'] = errors
     
     return redirect(url_for('profile.profile'))

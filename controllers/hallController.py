@@ -1,12 +1,44 @@
 
 from flask import Blueprint, session, request, render_template, redirect, url_for
 from tools.tools_for_base import connect_to_base, close_base
+import base64  # Добавьте эту строку
+import sqlite3
 
 
 
 hall_bp = Blueprint('hall', __name__)
 
+    
 class Halls_actions:
+    
+    @staticmethod
+    def get_halls_with_photos():
+        conn, cursor = connect_to_base()
+        # Убираем GROUP BY и выбираем все фотографии
+        cursor.execute('''
+            SELECT h.hall_id, h.title, p.photo_bytes 
+            FROM Hall h
+            LEFT JOIN Photo p ON h.hall_id = p.hall_id
+        ''')
+        halls_data = cursor.fetchall()
+        close_base(conn)
+        
+        # Группируем фотографии по залам
+        halls_dict = {}
+        for hall_id, title, photo_bytes in halls_data:
+            if hall_id not in halls_dict:
+                halls_dict[hall_id] = {
+                    'hall_id': hall_id,
+                    'title': title,
+                    'photos': []
+                }
+            if photo_bytes:
+                halls_dict[hall_id]['photos'].append(
+                    base64.b64encode(photo_bytes).decode('utf-8')
+                )
+        
+        return list(halls_dict.values())
+    
     
     @staticmethod
     def get_hall_full(hall_id):

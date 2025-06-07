@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Авторизация</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     {% include 'header.html' %}
@@ -13,18 +13,24 @@
     <main>
         <div class="login-container">
             <h2>Авторизация</h2>
-            <form action="#" method="post">
+
+            {% if errors %}
+                <div class="error-container">
+                    {% for error in errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <form action="{{ url_for('user.authorization') }}" method="post">
                 <label for="username">Учетная запись</label>
-                <input type="text" id="username" name="username" placeholder="qwerty435">
+                <input type="text" id="login" name="login" placeholder="qwerty435">
 
                 <label for="password">Пароль</label>
                 <input type="password" id="password" name="password" placeholder="password123">
 
-                <p class="error-message">Неправильная учетная запись или пароль</p>
-
                 <button type="submit">Войти</button>
 
-                <p class="register-link">Нет аккаунта? <a href="#">Регистрация</a></p>
+                <p class="register-link">Нет аккаунта? <a href="{{ url_for('user.registration') }}">Регистрация</a></p>
             </form>
         </div>
     </main>

@@ -1,10 +1,12 @@
 import sqlite3
 import hashlib
-
+import os
 from controllers.userController import Checkers
 import sys
 sys.path.append('.')
 
+# Создаем папку для фото, если её нет
+os.makedirs('static/photo', exist_ok=True)
 
 connection = sqlite3.connect('booking_database.db')
 cursor = connection.cursor()
@@ -13,7 +15,7 @@ cursor = connection.cursor()
 cursor.execute("DROP TABLE IF EXISTS User")  
 cursor.execute("DROP TABLE IF EXISTS Hall") 
 cursor.execute("DROP TABLE IF EXISTS Booking")  
-cursor.execute("DROP TABLE IF EXISTS Photo")  # Исправлено Fhoto -> Photo
+cursor.execute("DROP TABLE IF EXISTS Photo")
 cursor.execute("DROP TABLE IF EXISTS Equipment")  
 cursor.execute("DROP TABLE IF EXISTS CrossEquipmentHall")
 
@@ -42,11 +44,10 @@ CREATE TABLE IF NOT EXISTS Equipment (
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Photo (
     photo_id INTEGER PRIMARY KEY,
-    equipment_id INTEGER NOT NULL,
-    photo_bytes BLOB NOT NULL,
     hall_id INTEGER NOT NULL,
-    FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
-    FOREIGN KEY(equipment_id) REFERENCES Equipment(equipment_id)
+    photo_bytes BLOB NOT NULL,
+    mime_type VARCHAR(50) NOT NULL DEFAULT 'image/jpeg',
+    FOREIGN KEY(hall_id) REFERENCES Hall(hall_id)
 )
 ''')
 
@@ -84,38 +85,29 @@ CREATE TABLE IF NOT EXISTS Booking (
 )
 ''')
 
-
 # Добавление администратора
 hashed_password = Checkers.get_hash_password('1')  
-
 cursor.execute('''
-    INSERT INTO Equipment (title)
-    VALUES (?)
-''', ('Микрофоны',))
-cursor.execute('''
-    INSERT INTO Equipment (title)
-    VALUES (?)
-''', ('Зеркала',))
-cursor.execute('''
-    INSERT INTO Equipment (title)
-    VALUES (?)
-''', ('Колонки',))
+    INSERT INTO User (first_name, second_name, patronymic, login, email, age, password, flag_role)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+''', ('Админ', 'Админович', 'Админов', 'admin', 'admin@example.com', 30, hashed_password, 1))
 
 # Добавление оборудования
 equipment = [
-    (1, 'Микрофоны'),
-    (2, 'Зеркала'),
-    (3, 'Колонки'),
-    (4, 'Проектор'),
-    (5, 'Световое оборудование'),
-    (6, 'Сценические конструкции')
+    ('Микрофоны',),
+    ('Зеркала',),
+    ('Колонки',),
+    ('Проектор',),
+    ('Световое оборудование',),
+    ('Сценические конструкции',)
 ]
+
 cursor.executemany('''
-    INSERT INTO Equipment (equipment_id, title)
-    VALUES (?, ?)
+    INSERT INTO Equipment (title)
+    VALUES (?)
 ''', equipment)
 
-# Добавление примеров залов с конкретными связями
+# Добавление примеров залов
 halls = [
     (1, 'Бальный зал "Ренессанс"', 
      'ул. Центральная, 1', 
@@ -138,16 +130,11 @@ cursor.executemany('''
     VALUES (?, ?, ?, ?, ?)
 ''', halls)
 
-# Создаем конкретные связи между залами и оборудованием
+# Связи между залами и оборудованием
 cross_links = [
-    # Бальный зал (1) имеет микрофоны и колонки
-    (1, 1), (3, 1),
-    
-    # Конференц-зал (2) имеет проектор и микрофоны
-    (4, 2), (1, 2),
-    
-    # Танцевальная студия (3) имеет зеркала и световое оборудование
-    (2, 3), (5, 3)
+    (1, 1), (3, 1),  # Бальный зал (1)
+    (4, 2), (1, 2),  # Конференц-зал (2)
+    (2, 3), (5, 3)   # Танцевальная студия (3)
 ]
 
 cursor.executemany('''
@@ -155,12 +142,41 @@ cursor.executemany('''
     VALUES (?, ?)
 ''', cross_links)
 
+# Функция для определения MIME-типа по расширению файла
+def get_mime_type(filename):
+    ext = filename.split('.')[-1].lower()
+    if ext in ['jpg', 'jpeg']:
+        return 'image/jpeg'
+    elif ext == 'png':
+        return 'image/png'
+    elif ext == 'webp':
+        return 'image/webp'
+    else:
+        return 'image/jpeg'  # по умолчанию
+
+# Добавляем реальные изображения из папки static/photo
+photo_files = [
+    (1, 'ball_1.webp'),
+    (1, 'ball_2.webp'),
+    (2, 'ball_3.jpg'),
+    (3, 'ball_4.webp')
+]
+
+for hall_id, filename in photo_files:
+    filepath = os.path.join('static', 'photo', filename)
+    try:
+        with open(filepath, 'rb') as f:
+            photo_bytes = f.read()
+        mime_type = get_mime_type(filename)
+        cursor.execute('''
+            INSERT INTO Photo (hall_id, photo_bytes, mime_type)
+            VALUES (?, ?, ?)
+        ''', (hall_id, photo_bytes, mime_type))
+    except FileNotFoundError:
+        print(f"Файл {filepath} не найден, пропускаем...")
+        continue
+
 # Фиксируем изменения и закрываем соединение
 connection.commit()
 connection.close()
-
-print("База данных успешно инициализирована!")
-print("Добавлено 3 зала с конкретным оборудованием:")
-print("1. Бальный зал - Микрофоны, Колонки")
-print("2. Конференц-зал - Проектор, Микрофоны")
-print("3. Танцевальная студия - Зеркала, Световое оборудование")
+print("База данных успешно создана и заполнена тестовыми данными!")

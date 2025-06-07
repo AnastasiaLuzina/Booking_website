@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Dance - Каталог</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/catalog.css') }}">
+</head>
+<body>
+    <header>
+        <h1>LET'S DANCE</h1>
+        <nav>
+            <a href="/">Главная</a> |
+            <a href="/catalog">Каталог</a> |
+            <a href="#">О сервисе</a> |
+            <a href="#">Личный кабинет</a>
+        </nav>
+    </header>
+    <main>
+        <h2 style="text-align: center; margin-top: 20px;">Каталог залов</h2>
+        <div class="catalog">
+            {% for hall in halls %}
+            <div class="hall-card">
+                <h3>{{ hall.title }}</h3>
+                
+                <div class="hall-photos">
+                    {% for photo in hall.photos %}
+                    <img src="data:image/jpeg;base64,{{ photo }}" alt="{{ hall.title }}">
+                    {% endfor %}
+                </div>
+                
+                <a href="/hall?hall_id={{ hall.hall_id }}">Подробнее</a>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

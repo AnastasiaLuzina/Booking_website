@@ -13,6 +13,22 @@ def main_page():
         return redirect(url_for('user.authorization'))
     return render_template("main_page.html", user=session["user"])
 
+
+
+@main_bp.route("/catalog")
+def catalog():
+    if "user" not in session:
+        return redirect(url_for('user.authorization'))
+    halls = Halls_actions.get_halls_with_photos()
+    return render_template("catalog.html", halls=halls, user=session["user"])
+
+
+@main_bp.route("/servis_info")
+def servis_info():
+    if "user" not in session:
+        return redirect(url_for('user.authorization'))
+    return render_template("servis_info.html", user=session["user"])
+
 @main_bp.route("/admin_page")
 def admin_page():
     if "user" not in session:
@@ -27,7 +43,4 @@ def admin_page():
     halls = Halls_actions.get_all_halls()
     
     return render_template("admin_page.html", user=user, halls=halls)
-
-
-    
     
