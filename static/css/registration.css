@@ -12,6 +12,19 @@ body {
     line-height: 1.6;
 }
 
+html,
+body {
+  height: 100%;
+}
+.wrapper {
+  position: relative;
+  min-height: 100%;
+}
+
+.content {
+  padding-bottom: 90px;
+}
+
 .container {
     flex-grow: 1;
     display: flex;
@@ -149,14 +162,13 @@ nav ul li a.button:active {
 footer {
     
     background-color: #fff;
-    padding: 20px 0;
-}
-
-.footer_orientation {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
     padding: 20px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    
 }
 
 .contacts {

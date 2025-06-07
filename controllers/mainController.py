@@ -11,7 +11,8 @@ def index():
 @main_bp.route("/catalog_page")
 def catalog_page():
     user = session.get("user")
-    return render_template("catalog.html", user=user)
+    halls = Halls_actions.get_halls_with_photos()
+    return render_template("catalog.html", halls=halls, user=user)
 
 @main_bp.route("/about_page")
 def about_page():  # Исправлено имя функции
