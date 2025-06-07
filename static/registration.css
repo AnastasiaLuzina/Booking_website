@@ -13,11 +13,13 @@ body {
 }
 
 .container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+
 
 /* Шапка */
 .logo {
@@ -56,6 +58,33 @@ nav ul a:hover {
     color: #0056b3;
 }
 
+nav ul li a.button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;  /* Чуть меньше padding для навигации */
+    margin-left: 15px;   /* Отступ от других пунктов меню */
+    margin-top: -15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;  /* Убираем подчеркивание */
+    display: inline-block;
+    transition: background-color 0.3s ease; /* Плавное изменение цвета */
+}
+
+/* Эффект при наведении */
+nav ul li a.button:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}
+
+/* Эффект при нажатии */
+nav ul li a.button:active {
+    background-color: #003d7a;
+    transform: translateY(1px);
+}
+
 /* Основное содержимое */
 .registration-form {
     background-color: #fff;
@@ -74,12 +103,12 @@ nav ul a:hover {
 .registration-form h3 {
     margin-top: 30px;
     margin-bottom: 15px;
-    text-align: center;
+    text-align: left;
 }
 
 .form-group {
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
     margin-bottom: 20px;
 }
 
@@ -118,8 +147,16 @@ nav ul a:hover {
 
 /* Подвал */
 footer {
+    
     background-color: #fff;
     padding: 20px 0;
+}
+
+.footer_orientation {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 .contacts {

@@ -173,8 +173,7 @@ def name_change():
 
 @profile_bp.route('/profile')
 def profile():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
+    
     
     # Получаем ошибки из сессии (если есть) и очищаем
     errors = session.pop('profile_errors', [])

@@ -45,6 +45,33 @@ nav ul li a {
     font-size: 16px;
 }
 
+nav ul li a.button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;  /* Чуть меньше padding для навигации */
+    margin-left: 15px;   /* Отступ от других пунктов меню */
+    margin-top: -15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;  /* Убираем подчеркивание */
+    display: inline-block;
+    transition: background-color 0.3s ease; /* Плавное изменение цвета */
+}
+
+/* Эффект при наведении */
+nav ul li a.button:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}
+
+/* Эффект при нажатии */
+nav ul li a.button:active {
+    background-color: #003d7a;
+    transform: translateY(1px);
+}
+
 /* Подчеркивание активной ссылки в меню */
 nav ul li a.active {
     color: #333; /* Цвет текста */ /* Цвет подчеркивания */
