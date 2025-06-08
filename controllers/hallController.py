@@ -11,6 +11,21 @@ hall_bp = Blueprint('hall', __name__)
     
 class Halls_actions:
     
+    
+    @staticmethod
+    def get_hall_by_id(hall_id):
+        """Получает зал по ID"""
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("SELECT * FROM Hall WHERE hall_id = ?", (hall_id,))
+            hall = cursor.fetchone()
+            close_base(conn)
+            return hall
+        except Exception as e:
+            print(f"Error getting hall: {str(e)}")
+            return None
+        
+    
     @staticmethod
     def get_halls_with_photos():
         conn, cursor = connect_to_base()

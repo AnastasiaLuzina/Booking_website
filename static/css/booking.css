@@ -1,252 +1,220 @@
+/* Основные стили */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Светло-голубой фон */
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
 .booking-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.hall-selector select {
-    padding: 8px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.week-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.nav-button {
-    background: #1890ff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 15px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.dates-container {
-    display: flex;
-    flex-grow: 1;
-    justify-content: space-around;
-}
-
-.calendar-container {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.time-slots-header {
-    display: flex;
-    background: #f0f2f5;
-    border-bottom: 1px solid #ddd;
-}
-
-.day-header {
-    flex: 1;
+h2 {
     text-align: center;
-    padding: 10px 5px;
-    cursor: pointer;
-    border-left: 1px solid #ddd;
-}
-
-.day-header.selected {
-    background: #e6f7ff;
+    color: #1e90ff; /* Ярко-синий */
+    margin-bottom: 30px;
+    font-size: 28px;
     font-weight: bold;
 }
 
-.day-name {
-    font-size: 14px;
-    color: #666;
-    text-transform: uppercase;
+/* Навигация по датам */
+.date-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding: 0 20px;
 }
 
-.day-date {
+.date-navigation button {
+    padding: 10px 20px;
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.date-navigation button:hover {
+    background-color: #0066cc;
+}
+
+.date-navigation span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1e90ff;
+}
+
+/* Дни недели */
+.week-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.day {
+    padding: 15px 5px;
+    background-color: #e6f2ff;
+    border: 2px solid #b3d7ff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.day.active {
+    background-color: #1e90ff;
+    color: white;
+    border-color: #0066cc;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.day span:first-child {
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.day span:last-child {
     font-size: 18px;
     font-weight: bold;
 }
 
-.time-slots-body {
-    display: flex;
-    min-height: 500px;
+/* Расписание времени */
+.schedule {
+    margin-top: 20px;
+    background: #f8fbff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
 }
 
-.time-column {
-    width: 80px;
-    background: #f9f9f9;
-    border-right: 1px solid #ddd;
+.availability-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
 }
 
-.time-column .time-slot-label {
-    height: 50px;
+.slot {
+    padding: 15px 5px;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    color: #666;
+    border: 1px solid transparent;
 }
 
-.day-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    border-left: 1px solid #eee;
+.slot.available {
+    background-color: #87cefa; /* Голубой */
+    color: #005c99;
+    border: 1px solid #5cb3ff;
 }
 
-.time-slot {
-    flex: 1;
-    border-bottom: 1px solid #eee;
-    position: relative;
-    cursor: pointer;
-}
-
-.time-slot.free {
-    background: #f6ffed;
-}
-
-.time-slot.booked {
-    background: #fff1f0;
-}
-
-.time-slot.selected {
-    background: #1890ff;
-}
-
-.time-slot.in-range {
-    background: #e6f7ff;
-}
-
-.time-slot.unavailable {
-    background: #f5f5f5;
+.slot.booked {
+    background-color: #ffb6c1; /* Светло-розовый */
+    color: #990033;
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
-.booking-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    padding: 15px;
-    background: #f0f2f5;
-    border-radius: 5px;
+.slot.selected {
+    background-color: #1e90ff;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border: 1px solid #0066cc;
 }
 
-.time-range-display {
-    font-size: 18px;
-    font-weight: bold;
-}
-
+/* Кнопка бронирования */
 .book-button {
-    background: #52c41a;
+    display: block;
+    margin: 30px auto 20px;
+    padding: 14px 40px;
+    background: linear-gradient(to right, #1e90ff, #0066cc);
     color: white;
     border: none;
-    border-radius: 5px;
-    padding: 10px 25px;
-    font-size: 16px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(30, 144, 255, 0.3);
 }
 
-.book-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+.book-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(30, 144, 255, 0.4);
 }
 
+/* Подсказки о доступности */
 .legend {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 30px;
     margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.legend-item {
+.legend span {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
-.color-box {
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
+.available-color, .booked-color {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
 }
 
-.color-box.free {
-    background: #f6ffed;
-    border: 1px solid #b7eb8f;
+.available-color {
+    background-color: #87cefa;
 }
 
-.color-box.booked {
-    background: #fff1f0;
-    border: 1px solid #ffa39e;
+.booked-color {
+    background-color: #ffb6c1;
 }
 
-.color-box.selected {
-    background: #1890ff;
-    border: 1px solid #096dd9;
-}
-
-.color-box.unavailable {
-    background: #f5f5f5;
-    border: 1px solid #d9d9d9;
-}
-
-/* Стили для страницы подтверждения */
-.confirmation-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.booking-details {
-    margin: 20px 0;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 5px;
-}
-
-.detail-row {
+/* Временные метки */
+.time-marker {
     display: flex;
-    margin: 15px 0;
-    font-size: 16px;
-}
-
-.label {
-    width: 150px;
+    align-items: center;
+    margin-bottom: 12px;
     font-weight: bold;
-    color: #555;
+    color: #1e90ff;
 }
 
-.value {
-    flex: 1;
-}
-
-.confirm-button {
-    background: #52c41a;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 12px 30px;
-    font-size: 18px;
-    cursor: pointer;
-    display: block;
-    width: 100%;
-    margin-top: 20px;
+.time-marker::before {
+    content: "";
+    display: inline-block;
+    width: 30px;
+    height: 2px;
+    background: #1e90ff;
+    margin-right: 10px;
 }

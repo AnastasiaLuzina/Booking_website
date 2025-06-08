@@ -17,6 +17,37 @@ time_slots_cache = defaultdict(lambda: defaultdict(dict))
 class BookingActions:
     
     @staticmethod
+    def get_available_slots(hall_id, date):
+        conn, cursor = connect_to_base()
+        try:
+            # Получаем занятые слоты
+            cursor.execute("""
+                SELECT start_time
+                FROM Bookings
+                WHERE hall_id = ? AND date = ? AND status = 'confirmed'
+            """, (hall_id, date))
+            booked_slots = [row[0] for row in cursor.fetchall()]
+            
+            # Генерируем все возможные слоты
+            all_slots = []
+            for hour in range(9, 17):
+                for minute in [0, 15, 30, 45]:
+                    time_str = f"{hour}:{minute:02d}"
+                    all_slots.append(time_str)
+            
+            # Фильтруем доступные слоты
+            available_slots = [slot for slot in all_slots if slot not in booked_slots]
+            
+            return {
+                'available_slots': available_slots,
+                'booked_slots': booked_slots
+            }
+        finally:
+            close_base(conn)
+        
+    
+    
+    @staticmethod
     def generate_time_slots():
         """Генерирует список временных слотов с 10:00 до 21:00 с шагом 30 минут"""
         slots = []
@@ -146,37 +177,70 @@ class BookingActions:
         finally:
             close_base(conn)
 
-@booking_bp.route("/booking", methods=['GET'])
-def booking_main():
+@booking_bp.route("/booking/<int:hall_id>", methods=['GET'])
+def booking_main(hall_id):
     if "user" not in session:
         return redirect(url_for('user.authorization'))
     
-    halls = Halls_actions.get_all_halls()
-    dates = BookingActions.get_available_dates()
-    selected_date = request.args.get('date', datetime.today().strftime('%Y-%m-%d'))
+    hall = Halls_actions.get_hall_by_id(hall_id)
+    
+    # Генерация данных для календаря
+    today = datetime.today()
+    week_days = []
+    for i in range(7):
+        day = today + timedelta(days=i)
+        week_days.append({
+            'name': ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][day.weekday()],
+            'date': day.day
+        })
+    
+    # Генерация временных слотов
+    time_slots = []
+    for hour in range(9, 17):
+        for minute in ['00', '15', '30', '45']:
+            time_slots.append(f"{hour}:{minute}")
     
     return render_template(
-        "booking_main.html", 
-        halls=halls,
-        dates=dates,
-        selected_date=selected_date
+        "booking.html",
+        hall=hall,
+        week_days=week_days,
+        time_slots=time_slots,
+        current_date=datetime.now().strftime("%B %Y")
     )
+    
 
 @booking_bp.route("/booking/slots", methods=['GET'])
 def get_slots():
-    """API для получения слотов времени"""
     hall_id = request.args.get('hall_id')
     booking_date = request.args.get('date')
     
     if not hall_id or not booking_date:
         return jsonify({'error': 'Missing parameters'}), 400
     
-    # Обновляем кэш слотов
-    BookingActions.update_slots_cache(int(hall_id), booking_date)
-    
-    # Возвращаем данные из кэша
-    slots_data = time_slots_cache[int(hall_id)][booking_date]
-    return jsonify(slots_data)
+    try:
+        # Генерируем все возможные слоты (9:00-16:45 с шагом 15 мин)
+        all_slots = []
+        for hour in range(9, 17):
+            for minute in [0, 15, 30, 45]:
+                if hour == 16 and minute > 45:
+                    continue
+                all_slots.append(f"{hour}:{minute:02d}")
+        
+        # Здесь должна быть логика получения занятых слотов из БД
+        # Заглушка для примера:
+        booked_slots = []
+        if hour % 2 == 0:  # Пример: каждый четный час занят
+            booked_slots = [f"{hour}:{minute:02d}" for hour in range(10, 17, 2) for minute in [0, 15, 30, 45]]
+        
+        available_slots = [slot for slot in all_slots if slot not in booked_slots]
+        
+        return jsonify({
+            'available': available_slots,
+            'booked': booked_slots
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @booking_bp.route("/booking/select_time", methods=['GET', 'POST'])
 def select_time():
@@ -214,6 +278,7 @@ def select_start(start_time):
     
     session['selected_start_time'] = start_time
     return redirect(url_for('booking.select_time'))
+
 
 @booking_bp.route("/booking/select_end", methods=['POST'])
 def select_end():

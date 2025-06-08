@@ -36,7 +36,10 @@
                     <button class="like-button"><i class="fas fa-heart"></i> Нравится</button>
                 </div>
                 
-                <button class="book-button">Забронировать</button>
+                <button class="book-button" 
+                        onclick="window.location.href='{{ url_for('booking.booking_main', hall_id=hall[0]) }}'">
+                    Забронировать
+                </button>
             </div>
             
             <div class="hall-info-section">

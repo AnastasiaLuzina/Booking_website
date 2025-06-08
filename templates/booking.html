@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Dance - Бронирование</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <main class="booking-container">
+        <h2>Бронирование зала: {{ hall[1] }}</h2>
+
+        <!-- Навигация по датам -->
+        <div class="date-navigation">
+            <button id="prev-week"><i class="fas fa-chevron-left"></i> Предыдущая неделя</button>
+            <span id="current-date">Июнь 2025</span>
+            <button id="next-week">Следующая неделя <i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <!-- Календарь с днями недели -->
+        <div class="week-days" data-hall-id="{{ hall[0] }}">
+            <!-- Динамически заполняем через JS -->
+        </div>
+
+        <!-- Расписание времени -->
+        <div class="schedule">
+            <!-- Временные метки и сетка -->
+            <div class="time-marker">9:00</div>
+            <div class="availability-grid" id="grid-9"></div>
+            
+            <div class="time-marker">10:00</div>
+            <div class="availability-grid" id="grid-10"></div>
+            
+            <div class="time-marker">11:00</div>
+            <div class="availability-grid" id="grid-11"></div>
+            
+            <div class="time-marker">12:00</div>
+            <div class="availability-grid" id="grid-12"></div>
+            
+            <div class="time-marker">13:00</div>
+            <div class="availability-grid" id="grid-13"></div>
+            
+            <div class="time-marker">14:00</div>
+            <div class="availability-grid" id="grid-14"></div>
+            
+            <div class="time-marker">15:00</div>
+            <div class="availability-grid" id="grid-15"></div>
+            
+            <div class="time-marker">16:00</div>
+            <div class="availability-grid" id="grid-16"></div>
+        </div>
+
+        <!-- Кнопка бронирования -->
+        <button id="book-button" class="book-button">Забронировать</button>
+
+        <!-- Подсказки о доступности -->
+        <div class="legend">
+            <span><span class="available-color"></span> Доступно</span>
+            <span><span class="booked-color"></span> Занято</span>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hallId = parseInt(document.querySelector('.week-days').dataset.hallId);
+            let currentDate = new Date();
+            
+            // Устанавливаем начальную дату на понедельник текущей недели
+            const dayOfWeek = currentDate.getDay();
+            const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            currentDate.setDate(currentDate.getDate() - diff);
+            
+            // Функция форматирования даты
+            function formatDate(date) {
+                const months = [
+                    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+                ];
+                return `${months[date.getMonth()]} ${date.getFullYear()}`;
+            }
+            
+            // Функция получения названия дня недели
+            function getDayName(date) {
+                const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                return days[date.getDay()];
+            }
+            
+            // Функция обновления календаря
+            async function updateCalendar() {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                
+                // Обновление заголовка с датой
+                document.getElementById('current-date').textContent = formatDate(currentDate);
+                
+                // Обновление дней недели
+                const daysContainer = document.querySelector('.week-days');
+                daysContainer.innerHTML = '';
+                
+                for (let i = 0; i < 7; i++) {
+                    const dayDate = new Date(currentDate);
+                    dayDate.setDate(currentDate.getDate() + i);
+                    
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'day' + (i === 0 ? ' active' : '');
+                    dayElement.dataset.date = dayDate.toISOString().split('T')[0];
+                    
+                    dayElement.innerHTML = `
+                        <span>${getDayName(dayDate)}</span>
+                        <span>${dayDate.getDate()}</span>
+                    `;
+                    
+                    daysContainer.appendChild(dayElement);
+                }
+                
+                // Получение данных о слотах
+                try {
+                    const response = await fetch(`/booking/slots?hall_id=${hallId}&date=${dateStr}`);
+                    const data = await response.json();
+                    
+                    // Очистка всех сеток
+                    for (let hour = 9; hour <= 16; hour++) {
+                        const grid = document.getElementById(`grid-${hour}`);
+                        if (grid) grid.innerHTML = '';
+                    }
+                    
+                    // Заполнение сеток слотами
+                    if (data.available && data.booked) {
+                        for (let hour = 9; hour <= 16; hour++) {
+                            const grid = document.getElementById(`grid-${hour}`);
+                            if (!grid) continue;
+                            
+                            for (let minute = 0; minute < 60; minute += 15) {
+                                if (hour === 16 && minute > 45) break;
+                                
+                                const time = `${hour}:${minute === 0 ? '00' : minute}`;
+                                const isAvailable = data.available.includes(time);
+                                const isBooked = data.booked.includes(time);
+                                
+                                const slotElement = document.createElement('div');
+                                slotElement.className = `slot ${isAvailable ? 'available' : ''} ${isBooked ? 'booked' : ''}`;
+                                slotElement.textContent = time;
+                                slotElement.dataset.time = time;
+                                
+                                if (isAvailable) {
+                                    slotElement.addEventListener('click', function() {
+                                        this.classList.toggle('selected');
+                                    });
+                                }
+                                
+                                grid.appendChild(slotElement);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Ошибка при загрузке слотов:', error);
+                }
+            }
+            
+            // Обработчики кнопок навигации
+            document.getElementById('prev-week').addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() - 7);
+                updateCalendar();
+            });
+            
+            document.getElementById('next-week').addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() + 7);
+                updateCalendar();
+            });
+            
+            // Обработка выбора дня недели
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.day')) {
+                    document.querySelectorAll('.day').forEach(day => {
+                        day.classList.remove('active');
+                    });
+                    e.target.closest('.day').classList.add('active');
+                    updateCalendar();
+                }
+            });
+            
+            // Обработка бронирования
+            document.getElementById('book-button').addEventListener('click', async () => {
+                const selectedSlots = Array.from(
+                    document.querySelectorAll('.slot.selected')
+                ).map(slot => slot.dataset.time);
+                
+                if (selectedSlots.length === 0) {
+                    alert('Выберите хотя бы один слот для бронирования');
+                    return;
+                }
+                
+                const activeDay = document.querySelector('.day.active');
+                if (!activeDay) {
+                    alert('Выберите день для бронирования');
+                    return;
+                }
+                
+                const activeDate = activeDay.dataset.date;
+                
+                try {
+                    const response = await fetch('/booking/create', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            user_id: {{ session.user.id }},
+                            hall_id: hallId,
+                            date: activeDate,
+                            slots: selectedSlots
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Бронирование успешно создано!');
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Ошибка: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Ошибка при бронировании:', error);
+                    alert('Произошла ошибка при бронировании');
+                }
+            });
+            
+            // Инициализация календаря
+            updateCalendar();
+        });
+    </script>
+</body>
+</html>
