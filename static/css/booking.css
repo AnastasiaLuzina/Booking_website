@@ -218,3 +218,35 @@ h2 {
     background: #1e90ff;
     margin-right: 10px;
 }
+
+/* Стиль для начального слота */
+.slot.start-selected {
+    background-color: #7700ff; /* Оранжево-красный */
+    color: white;
+    border: 1px solid #7700ff;
+    box-shadow: 0 4px 8px rgba(255, 99, 71, 0.3);
+}
+
+/* Стиль для конечного слота */
+.slot.end-selected {
+    background-color: #7700ff; /* Ярко-зеленый */
+    color: white;
+    border: 1px solid lab(25.6% 27.25 -55.04);
+    box-shadow: 0 4px 8px rgba(50, 205, 50, 0.3);
+}
+
+/* Стиль для промежуточных слотов */
+.slot.temp-selected {
+    background-color: #0943af; /* Темно-синий */
+    color: white;
+    border: 1px solid #062c73;
+}
+
+/* Убираем эффекты при наведении на уже выбранные слоты */
+.slot.selected,
+.slot.start-selected,
+.slot.end-selected,
+.slot.temp-selected {
+    cursor: default;
+    pointer-events: none;
+}

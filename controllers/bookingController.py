@@ -150,32 +150,27 @@ class BookingActions:
         available_slots = time_slots_cache[hall_id][booking_date]['available']
         return all(slot in available_slots for slot in interval_slots)
     
-    @staticmethod
-    def create_booking(user_id, hall_id, booking_date, start_time, end_time):
-        """Создает бронирование в базе данных"""
-        conn, cursor = connect_to_base()
-        try:
-            # Рассчитываем продолжительность
-            start_dt = datetime.strptime(start_time, '%H:%M')
-            end_dt = datetime.strptime(end_time, '%H:%M')
-            duration = (end_dt - start_dt).total_seconds() / 60  # в минутах
-            
-            # Создаем бронирование
-            cursor.execute("""
-                INSERT INTO Bookings (user_id, hall_id, date, start_time, end_time, duration, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (user_id, hall_id, booking_date, start_time, end_time, duration, 'confirmed'))
-            
-            commit_in_base(conn)
-            
-            # Обновляем кэш
-            BookingActions.update_slots_cache(hall_id, booking_date)
-            
-            return True, "Бронирование успешно создано"
-        except sqlite3.Error as e:
-            return False, f"Ошибка при создании брони: {str(e)}"
-        finally:
-            close_base(conn)
+        @staticmethod
+        def create_booking(user_id, hall_id, booking_date, start_time, end_time, status_for_admin):
+            conn, cursor = connect_to_base()
+            try:
+                # Рассчитываем продолжительность
+                start_dt = datetime.strptime(start_time, '%H:%M')
+                end_dt = datetime.strptime(end_time, '%H:%M')
+                duration = (end_dt - start_dt).total_seconds() / 60  # в минутах
+
+                # Создаем бронирование
+                cursor.execute("""
+                    INSERT INTO Booking (user_id, hall_id, date, start_time, end_time, status_for_admin)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (user_id, hall_id, booking_date, start_time, end_time, status_for_admin))
+
+                commit_in_base(conn)
+                return True, "Бронирование успешно создано"
+            except sqlite3.Error as e:
+                return False, f"Ошибка при создании брони: {str(e)}"
+            finally:
+                close_base(conn)
 
 @booking_bp.route("/booking/<int:hall_id>", methods=['GET'])
 def booking_main(hall_id):
@@ -371,3 +366,39 @@ def confirm_booking():
         },
         hall=hall
     )
+
+@booking_bp.route("/booking/create", methods=['POST'])
+def create_booking():
+    if "user" not in session:
+        return jsonify({'success': False, 'message': 'Требуется авторизация'}), 401
+
+    data = request.get_json()
+    required = ['hall_id', 'date', 'start_time', 'end_time']
+    if not all(param in data for param in required):
+        return jsonify({'success': False, 'message': 'Недостаточно данных'}), 400
+
+    hall_id = data['hall_id']
+    booking_date = data['date']
+    start_time = data['start_time']
+    end_time = data['end_time']
+
+    # Проверка формата времени
+    try:
+        datetime.strptime(start_time, '%H:%M')
+        datetime.strptime(end_time, '%H:%M')
+    except ValueError:
+        return jsonify({'success': False, 'message': 'Неверный формат времени'}), 400
+
+    # Проверка доступности слотов
+    is_available = BookingActions.check_booking_availability(hall_id, booking_date, start_time, end_time)
+    if not is_available:
+        return jsonify({'success': False, 'message': 'Слоты заняты'}), 400
+
+    user_id = session['user']['id']
+    status_for_admin = 1  # Активное бронирование
+    success, message = BookingActions.create_booking(user_id, hall_id, booking_date, start_time, end_time, status_for_admin)
+
+    return jsonify({
+        'success': success,
+        'message': message
+    }), 200 if success else 400
