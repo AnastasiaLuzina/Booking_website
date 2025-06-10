@@ -94,7 +94,7 @@ nav ul li a {
 }
 
 .hall-card a {
-    display: block;
+    display: flex;
     margin-top: 15px;
     padding: 10px 15px;
     background: linear-gradient(135deg, #1e6bdc, #0d47a1);
