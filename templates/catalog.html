@@ -10,7 +10,8 @@
     {% include 'header.html' %}
     <main>
         <h2 style="text-align: center; margin-top: 20px;">Каталог залов</h2>
-        <div class="catalog">
+        
+        <!-- <div class="catalog">
             {% for item in halls %}
             <div class="hall-card">
                 <h3>{{ item.title }}</h3>
@@ -23,10 +24,32 @@
                 <div class="no-photo">Изображение отсутствует</div>
                 {% endif %}
                 
-                <a href="/hall?hall_id={{ item.hall_id }}">Подробнее</a>
+                <a href="/hall?hall_id={{ item.hall_id }}">Забронировать</a>
             </div>
             {% endfor %}
+        </div> -->
+        <div class="catalog">
+            {% for item in halls %}
+            <!-- Общая ссылка на просмотр зала -->
+            <a href="/hall?hall_id={{ item.hall_id }}" class="hall-link">
+                <div class="hall-card">
+                    <h3>{{ item.title }}</h3>
+                    
+                    {% if item.photo %}
+                    <div class="hall-photo">
+                        <img src="data:image/jpeg;base64,{{ item.photo }}" alt="{{ item.title }}">
+                    </div>
+                    {% else %}
+                    <div class="no-photo">Изображение отсутствует</div>
+                    {% endif %}
+                </div>
+            </a>
+            
+            <!-- Отдельная ссылка для кнопки бронирования -->
+            <a class="book-button" href="{{ url_for('booking.booking_main', hall_id=item.hall_id) }}">Забронировать</a>
+            {% endfor %}
         </div>
+
     </main>
 </body>
 </html>

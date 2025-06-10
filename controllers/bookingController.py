@@ -322,6 +322,8 @@ def select_end():
 @booking_bp.route("/booking/confirm", methods=['GET', 'POST'])
 def confirm_booking():
     if "user" not in session:
+         # Запоминаем текущий URL (страницу бронирования)
+        session['next_url'] = request.referrer  # или request.url, если нужно точнее
         return redirect(url_for('user.authorization'))
     
     booking_data = session.get('booking_confirmation', {})

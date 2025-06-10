@@ -14,38 +14,42 @@
         <div class="container">
             <section class="registration-form">
                 <h2>Регистрация</h2>
-                <form id="registrationForm">
+                <form  method="POST" action="{{ url_for('user.registration') }}">
                     <!-- Персональные данные -->
                     <h3>Введите ваши персональные данные</h3>
                     <div class="form-group">
                         <label for="lastName">Фамилия</label>
-                        <input type="text" id="lastName" name="lastName" placeholder="Иванов">
+                        <input type="text" name="second_name"placeholder="Иванов">
                     </div>
                     <div class="form-group">
                         <label for="patronymic">Отчество</label>
-                        <input type="text" id="patronymic" name="patronymic" placeholder="Иванович">
+                        <input type="text" name="patronymic" placeholder="Иванович">
                     </div>
                     <div class="form-group">
                         <label for="firstName">Имя</label>
-                        <input type="text" id="firstName" name="firstName" placeholder="Иван">
+                        <input type="text" name="first_name" placeholder="Иван">
                     </div>
                     <div class="form-group">
                         <label for="age">Возраст</label>
-                        <input type="number" id="age" name="age" placeholder="22">
+                        <input type="number" name="age" placeholder="22">
                     </div>
-
                     <!-- Данные для входа -->
                     <h3>Введите свою почту и придумайте пароль</h3>
                     <div class="form-group">
                         <label for="email">Почта</label>
-                        <input type="email" id="email" name="email" placeholder="letsdance@mail.ru">
+                        <input type="email"name="email" placeholder="letsdance@mail.ru">
                     </div>
                     <div class="form-group">
                         <label for="password">Пароль</label>
-                        <input type="password" id="password" name="password" placeholder="password1234">
+                        <input type="password"name="password" placeholder="password1234">
                     </div>
-
-                   <p class="error-message">не все поля заполнены</p>
+                    {% if errors %}
+                        <div class="error-message">
+                            {% for error in errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
                     <!-- Кнопка отправки -->
                     <button type="submit" class="submit-btn">Создать аккаунт</button>

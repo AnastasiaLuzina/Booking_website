@@ -80,6 +80,7 @@ class Checkers:
     def check_registration(first_name, second_name, patronymic, login, email, age, password):
         errors = []
         if not all([first_name, second_name, patronymic, login, email, age, password]):
+            print(1)
             errors.append("Заполните все поля")
         else:
 
@@ -95,11 +96,11 @@ class Checkers:
             elif not Checkers.is_valid_email(email):
                 errors.append("Некорректный email")
                 
-            elif not Checkers.is_login_unique(login):
-                errors.append("Этот логин уже занят")
+            # elif not Checkers.is_login_unique(login):
+            #     errors.append("Этот логин уже занят")
             
-            elif not Checkers.is_valid_login(login):
-                errors.append("Логин должен быть длинее 6 символов")
+            # elif not Checkers.is_valid_login(login):
+            #     errors.append("Логин должен быть длинее 6 символов")
                 
             elif not Checkers.is_password_unique(password):
                 errors.append("Этот пароль уже используется другим пользователем")
@@ -177,20 +178,21 @@ def registration():
         first_name = request.form.get("first_name")
         second_name = request.form.get("second_name")
         patronymic = request.form.get("patronymic")
-        login = request.form.get("login")
         email = request.form.get("email")
+        login = email.split('@')[0]
         age = request.form.get("age")
         password = request.form.get("password")
         flag_role = 0
-        
+        print(first_name, second_name, patronymic, login, email, age, password)
         errors = Checkers.check_registration(first_name, second_name, patronymic, login, email, age, password)
-        
+        print(errors)
         if not errors:
             result = Registration.add_to_base(first_name, second_name, patronymic, login, email, age, password, flag_role)
+            print(result)
             if result[0]:
                     _, user_id, flag_role = result
                     session["user"] = {"id": user_id, "email": email, "role": flag_role}
-                    return redirect(url_for('main.main_page'))  
+                    return redirect(url_for('main.index'))  
             else:
                 errors.append(result[1])
         return render_template("registration.html", errors=errors)
@@ -220,7 +222,14 @@ def authorization():
                 if auth_data['flag_role'] == 1:  # Проверка на админа
                      return redirect(url_for('main.admin_page'))
                 
-                return redirect(url_for('main.main_page'))
+                # Получаем URL для перенаправления (из параметра ?next= или берём предыдущую страницу)
+                next_url = request.args.get('next') or request.referrer
+                
+                # Проверяем, что next_url не ведёт на саму авторизацию (избегаем зацикливания)
+                if next_url and url_for('user.authorization') not in next_url:
+                    return redirect(next_url)
+                else:
+                    return redirect(url_for('main.index'))
             else:
                 errors.append(auth_data)  # Добавляем сообщение об ошибке
                 
