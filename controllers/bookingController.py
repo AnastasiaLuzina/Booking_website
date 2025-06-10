@@ -179,8 +179,8 @@ class BookingActions:
 
 @booking_bp.route("/booking/<int:hall_id>", methods=['GET'])
 def booking_main(hall_id):
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
+    # if "user" not in session:
+    #     return redirect(url_for('user.authorization'))
     
     hall = Halls_actions.get_hall_by_id(hall_id)
     
