@@ -1,0 +1,220 @@
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e6f7ff;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Шапка */
+header {
+    background-color: #e6f7ff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Подчеркивание активной ссылки в меню */
+nav ul li a.active {
+    color: #333; /* Цвет текста */ /* Цвет подчеркивания */
+    text-decoration: underline; 
+    text-decoration-color: #007bff;
+    text-decoration-thickness: 3px;
+}
+
+/* Основное содержимое */
+main {
+    background-color: #e6f7ff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+    background-color: #e6f7ff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+main h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ededed; /* Серый фон */
+    padding: 10px 20px; /* Внутренние отступы */
+    border-radius: 20px; /* Скругление углов */
+    width: 100%; /* Занимает всю доступную ширину */
+}
+
+.calendar-header-container button {
+    padding: 10px 20px; /* Увеличенные отступы для кнопок */
+    border: none; /* Убираем границы */
+    background-color: transparent; /* Прозрачный фон кнопок */
+    color: #333; /* Цвет текста */
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Плавные переходы */
+}
+
+.calendar-header-container button:hover {
+    color: #007bff; /* Изменение цвета текста при наведении */
+}
+
+
+.weekdays {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.weekday {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.weekday.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.time-grid {
+    display: grid;
+    grid-template-columns: 50px repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.time-slot {
+    background-color: #e6f7ff;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.time-slot.available {
+    background-color: #a5e1fd;
+}
+
+.time-slot.booked {
+    background-color: #f6bff4;
+}
+
+.booking-button {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.booking-button button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.legend {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.legend span {
+    display: inline-block;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.legend .available::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #a5e1fd;
+    margin-right: 5px;
+}
+
+.legend .booked::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #f6bff4;
+    margin-right: 5px;
+}
+
+/* Подвал */
+footer {
+    background-color: #cceeff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+footer hr {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+}

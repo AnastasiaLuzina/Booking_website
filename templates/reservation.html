@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование</title>
+    <link rel="stylesheet" href="reservation.css">
+</head>
+<body>
+    <!-- Шапка -->
+     <header>
+        <div class="logo">LET'S DANCE</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#">Главная</a></li>
+                <li><a href="#" class="active">Каталог</a></li>
+                <li><a href="#">О сервисе</a></li>
+                <li><a href="#">Личный кабинет</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Основное содержимое -->
+    <main>
+        <div class="container">
+            <h2>Бронирование</h2>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <div class="calendar-header-container">
+                        <button id="prevWeek">&lt; Пред неделя</button>
+                        <span id="currentMonth">Июнь 2025</span>
+                        <button id="nextWeek">След неделя &gt;</button>
+                    </div>
+                </div>
+                <div class="weekdays">
+                    <div class="weekday">Пн<br>9</div>
+                    <div class="weekday">Вт<br>10</div>
+                    <div class="weekday">Ср<br>11</div>
+                    <div class="weekday active">Чт<br>12</div>
+                    <div class="weekday">Пт<br>13</div>
+                    <div class="weekday">Сб<br>14</div>
+                    <div class="weekday">Вс<br>15</div>
+                </div>
+                <div class="time-grid">
+                    <div class="time-slot">9:00</div>
+                    <div class="time-slot available">9:00</div>
+                    <div class="time-slot booked">9:15</div>
+                    <div class="time-slot available">9:30</div>
+                    <div class="time-slot available">9:45</div>
+
+                    <div class="time-slot">10:00</div>
+                    <div class="time-slot available">10:00</div>
+                    <div class="time-slot available">10:15</div>
+                    <div class="time-slot available">10:30</div>
+                    <div class="time-slot available">10:45</div>
+
+                    <div class="time-slot">11:00</div>
+                    <div class="time-slot available">11:00</div>
+                    <div class="time-slot available">11:15</div>
+                    <div class="time-slot available">11:30</div>
+                    <div class="time-slot available">11:45</div>
+
+                    <div class="time-slot">12:00</div>
+                    <div class="time-slot available">12:00</div>
+                    <div class="time-slot available">12:15</div>
+                    <div class="time-slot available">12:30</div>
+                    <div class="time-slot available">12:45</div>
+
+                    <div class="time-slot">13:00</div>
+                    <div class="time-slot available">13:00</div>
+                    <div class="time-slot available">13:15</div>
+                    <div class="time-slot available">13:30</div>
+                    <div class="time-slot available">13:45</div>
+
+                    <div class="time-slot">14:00</div>
+                    <div class="time-slot available">14:00</div>
+                    <div class="time-slot booked">14:15</div>
+                    <div class="time-slot booked">14:30</div>
+                    <div class="time-slot available">14:45</div>
+
+                    <div class="time-slot">15:00</div>
+                    <div class="time-slot available">15:00</div>
+                    <div class="time-slot available">15:15</div>
+                    <div class="time-slot available">15:30</div>
+                    <div class="time-slot available">15:45</div>
+
+                    <div class="time-slot">16:00</div>
+                    <div class="time-slot available">16:00</div>
+                    <div class="time-slot available">16:15</div>
+                    <div class="time-slot booked">16:30</div>
+                    <div class="time-slot booked">16:45</div>
+                </div>
+                <div class="booking-button">
+                    <button>Забронировать</button>
+                </div>
+                <div class="legend">
+                    <span class="available">Доступно</span>
+                    <span class="booked">Занято</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <hr>
+            <p>Контакты:</p>
+        </div>
+    </footer>
+</body>
+</html>
