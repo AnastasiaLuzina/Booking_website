@@ -198,18 +198,24 @@ h2 {
 
 /* Подвал */
 footer {
-    margin-top: auto;
-    padding: 20px 0;
-    text-align: center;
-}
-
-footer hr {
+    
+    background-color: #fff;
+    padding: 20px;
+    
+    left: 0;
+    bottom: 0;
     width: 100%;
-    border: 1px solid #fff;
-    margin: 20px 0;
+    height: 80px;
+    
 }
 
 .contacts {
-    color: #fff;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.copyright {
+    text-align: left;
     font-size: 12px;
+    color: #666;
 }
