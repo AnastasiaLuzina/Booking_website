@@ -118,9 +118,10 @@
                 }
 
                 try {
-                    const response = await fetch(`/booking/slots?hall_id=${hallId}&date=${dateStr}`);
-                    const data = await response.json();
-
+                    // Получаем забронированные интервалы
+                    const intervalsResponse = await fetch(`/booking/booked_intervals?hall_id=${hallId}&date=${dateStr}`);
+                    const bookedIntervals = await intervalsResponse.json();
+                    
                     // Очистка сеток перед обновлением
                     for (let hour = 9; hour <= 16; hour++) {
                         const grid = document.getElementById(`grid-${hour}`);
@@ -135,16 +136,27 @@
                         for (let minute = 0; minute < 60; minute += 15) {
                             if (hour === 16 && minute > 45) break;
 
-                            const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                            const isAvailable = data.available.includes(time);
-                            const isBooked = data.booked.includes(time);
-
+                            const time = `${hour}:${minute.toString().padStart(2, '0')}`;
+                            const timeObj = new Date(0, 0, 0, hour, minute);
+                            
+                            // Проверяем, находится ли текущий слот в забронированном интервале
+                            let isBooked = false;
+                            for (const interval of bookedIntervals) {
+                                const start = new Date(0, 0, 0, ...interval.start.split(':').map(Number));
+                                const end = new Date(0, 0, 0, ...interval.end.split(':').map(Number));
+                                
+                                if (timeObj >= start && timeObj < end) {
+                                    isBooked = true;
+                                    break;
+                                }
+                            }
+                            
                             const slot = document.createElement('div');
-                            slot.className = `slot ${isAvailable ? 'available' : ''} ${isBooked ? 'booked' : ''}`;
+                            slot.className = `slot ${isBooked ? 'booked' : 'available'}`;
                             slot.textContent = time;
                             slot.dataset.time = time;
 
-                            if (isAvailable) {
+                            if (!isBooked) {
                                 slot.addEventListener('click', (e) => {
                                     if (!startSlot) {
                                         // Выбираем начальный слот
@@ -226,7 +238,13 @@
                     return;
                 }
                 const startTime = selected[0].dataset.time;
-                const endTime = selected[selected.length - 1].dataset.time;
+                
+                // Рассчитываем end_time (последний слот + 15 минут)
+                const lastSlot = selected[selected.length - 1].dataset.time;
+                const [lastHour, lastMinute] = lastSlot.split(':').map(Number);
+                const lastSlotTime = new Date(0, 0, 0, lastHour, lastMinute);
+                lastSlotTime.setMinutes(lastSlotTime.getMinutes() + 15);
+                const endTime = `${lastSlotTime.getHours().toString().padStart(2, '0')}:${lastSlotTime.getMinutes().toString().padStart(2, '0')}`;
 
                 try {
                     const response = await fetch('/booking/create', {

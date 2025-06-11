@@ -176,6 +176,18 @@ for hall_id, filename in photo_files:
         print(f"Файл {filepath} не найден, пропускаем...")
         continue
 
+# Добавим тестовые бронирования
+bookings = [
+    (1, 1, '2025-06-12', '10:00', '11:00', 1),
+    (1, 2, '2025-06-12', '14:00', '15:30', 1),
+    (2, 3, '2025-06-13', '09:00', '10:30', 1)
+]
+
+cursor.executemany('''
+    INSERT INTO Booking (user_id, hall_id, date, start_time, end_time, status_for_admin)
+    VALUES (?, ?, ?, ?, ?, ?)
+''', bookings)
+
 # Фиксируем изменения и закрываем соединение
 connection.commit()
 connection.close()
