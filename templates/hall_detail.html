@@ -54,8 +54,13 @@
                         
                         <div class="action-section">
                             <div class="likes-row">
-                                <span class="likes-count">{{ hall[4] }}</span>
-                                <button class="like-button"><i class="fas fa-heart"></i> Нравится</button>
+                                <button class="like-button {% if user_has_liked %}liked{% endif %}" 
+                                        data-hall-id="{{ hall[0] }}"
+                                        data-user-liked="{% if user_has_liked %}true{% else %}false{% endif %}">
+                                    <i class="fas fa-heart"></i>
+                                    {% if user_has_liked %}Убрать лайк{% else %}Нравится{% endif %}
+                                </button>
+                                <span class="likes-count">{{ total_likes }}</span>
                             </div>
                             
                             <button class="book-button" 
@@ -79,12 +84,50 @@
         });
         
         // Скрипт для обработки лайков
-        document.querySelector('.like-button').addEventListener('click', function() {
-            const likesCount = document.querySelector('.likes-count');
-            let count = parseInt(likesCount.textContent);
-            likesCount.textContent = count + 1;
-            this.classList.toggle('liked');
+        
+        document.querySelector('.like-button').addEventListener('click', async function() {
+    const button = this;
+    const hallId = button.dataset.hallId;
+    const wasLiked = button.dataset.userLiked === 'true';
+    const likesCountElement = document.querySelector('.likes-count');
+    
+    try {
+        // Проверяем авторизацию
+        const authCheck = await fetch('/check_auth', {credentials: 'include'});
+        if (!authCheck.ok) {
+            if (confirm('Для добавления лайка необходимо войти. Перейти на страницу входа?')) {
+                window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+            }
+            return;
+        }
+
+        // Отправляем запрос на лайк
+        const response = await fetch(`/hall_likes/${hallId}`, {
+            method: 'POST',
+            credentials: 'include'
         });
+        
+        if (!response.ok) {
+            throw new Error('Необходимо авторизироваться');
+        }
+
+        // Обновляем интерфейс
+        const result = await response.json();
+        likesCountElement.textContent = result.likes_count;
+        
+        // Обновляем состояние кнопки
+        const isNowLiked = result.action === 'liked';
+        button.dataset.userLiked = isNowLiked.toString();
+        button.classList.toggle('liked', isNowLiked);
+        button.innerHTML = isNowLiked 
+            ? '<i class="fas fa-heart"></i> Убрать лайк' 
+            : '<i class="fas fa-heart"></i> Нравится';
+            
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Ошибка: ' + error.message);
+    }
+});
     </script>
 </body>
 </html>

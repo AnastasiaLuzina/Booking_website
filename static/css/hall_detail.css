@@ -278,6 +278,12 @@ nav ul a:hover {
     gap: 8px;
 }
 
+.like-button.liked {
+    background: #ffebee;
+    border-color: #f44336;
+    color: #f44336;
+}
+
 .booking-form {
     width: 100%;
 }

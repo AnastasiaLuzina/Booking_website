@@ -19,29 +19,40 @@
                 <div class="user-info">
                     <div>
                         <label>Пользователь</label>
-                        <span>Иванов Иван Иванович</span>
+                        <span>{{ user.second_name }} {{ user.first_name }} {{ user.patronymic }}</span>
                     </div>
                     <div>
                         <label>Логин</label>
-                        <span>letsdance</span>
+                        <span>{{ user.login }}</span>
                     </div>
                     <div>
                         <label>Почта</label>
-                        <span>letsdance@mail.ru</span>
+                        <span>{{ user.email }}</span>
                     </div>
                     <div>
                         <label>Возраст</label>
-                        <span>22</span>
+                        <span>{{ user.age }}</span>
                     </div>
                 </div>
 
                 <!-- Избранное -->
                 <div class="favorites">
                     <h3>Избранное <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></h3>
-                    <div class="favorite-items">
-                        <div class="favorite-item"></div>
-                        <div class="favorite-item"></div>
-                        <div class="favorite-item"></div>
+                    <div class="favorites-grid">
+                        {% for item in halls %}
+                        <a href="/hall?hall_id={{ item.hall_id }}" class="favorite-card">
+                            <div class="favorite-image">
+                                {% if item.photo %}
+                                <img src="data:image/jpeg;base64,{{ item.photo }}" alt="{{ item.title }}">
+                                {% else %}
+                                <div class="no-photo">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="favorite-title">{{ item.title }}</div>
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -52,8 +63,8 @@
 
                 <!-- Действия -->
                 <div class="actions">
-                    <button class="pass">Выйти из аккаунта</button>
-                    <button>Сменить пароль</button>
+                    <button onclick="window.location.href='{{ url_for('user.logout') }}'" >Выйти из аккаунта</button>
+                    <button onclick="window.location.href='{{ url_for('profile.profile_edit_page') }}'">Изменить данные</button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_edit.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <main>
+        <div class="container">
+            <div class="profile-edit-card">
+                <h2><i class="fas fa-user-edit"></i> Редактирование профиля</h2>
+                
+                <form method="POST" action="{{ url_for('user.edit_user') }}" class="edit-form">
+                    <div class="form-columns">
+                        <!-- Левая колонка -->
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="lastName"><i class="fas fa-user-tag"></i> Фамилия</label>
+                                <input type="text" 
+                                       name="second_name" 
+                                       id="second_name"
+                                       value="{{ user.second_name  }}"
+                                       placeholder="Введите фамилию">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="firstName"><i class="fas fa-user"></i> Имя</label>
+                                <input type="text" 
+                                       name="first_name" 
+                                       id="first_name"
+                                       value="{{ user.first_name }}"
+                                       placeholder="Введите имя">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email"><i class="fas fa-envelope"></i> Почта</label>
+                                <input type="email" 
+                                       name="email" 
+                                       id="email"
+                                       value="{{ user.email  }}"
+                                       placeholder="example@mail.ru">
+                            </div>
+                        </div>
+                        
+                        <!-- Правая колонка -->
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="patronymic"><i class="fas fa-user-friends"></i> Отчество</label>
+                                <input type="text" 
+                                       name="patronymic" 
+                                       id="patronymic"
+                                       value="{{ user.patronymic }}"
+                                       placeholder="Введите отчество">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="age"><i class="fas fa-birthday-cake"></i> Возраст</label>
+                                <input type="number" 
+                                       name="age" 
+                                       id="age"
+                                       value="{{ user.age  }}"
+                                       placeholder="Введите возраст">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if errors %}
+                        <div class="error-message">
+                            {% for error in errors %}
+                                <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="changePasswordBtn">
+                            <i class="fas fa-key"></i> Изменить пароль
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сохранить изменения
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+
+<!-- Модальное окно смены пароля -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2><i class="fas fa-key"></i> Смена пароля</h2>
+        
+        <form id="changePasswordForm" class="password-form" method="POST" action="{{ url_for('user.edit_password') }}">
+            
+            
+            <div class="form-group">
+                <label for="newPassword"><i class="fas fa-lock"></i> Новый пароль</label>
+                <input type="password" name="password" required>
+                
+            </div>
+            {% if errors %}
+                <div class="error-message">
+                    {% for error in errors %}
+                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if js_alert %}
+                <script>
+                    alert("{{ js_alert }}");
+                </script>
+            {% endif %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Сохранить пароль
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Получаем элементы
+    const modal = document.getElementById("passwordModal");
+    const btn = document.querySelector(".btn-secondary");
+    const span = document.getElementsByClassName("close")[0];
+    const form = document.getElementById("changePasswordForm");
+    
+    // Открываем модальное окно при клике на кнопку
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+    
+    // Закрываем при клике на крестик
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    
+    // Закрываем при клике вне окна
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    
+    // // Валидация пароля в реальном времени
+    // const newPassword = document.getElementById("newPassword");
+    
+    // const authCheck = await fetch('/edit_password', {credentials: 'include'});
+
+    // newPassword.addEventListener('input', function() {
+    //     const strength = checkPasswordStrength(this.value);
+    //     strengthIndicator.textContent = strength.message;
+    //     strengthIndicator.className = "password-strength " + strength.class;
+    // });
+    
+    // confirmPassword.addEventListener('input', function() {
+    //     if (this.value !== newPassword.value) {
+    //         matchIndicator.textContent = "Пароли не совпадают!";
+    //         matchIndicator.style.color = "#e74c3c";
+    //     } else {
+    //         matchIndicator.textContent = "Пароли совпадают";
+    //         matchIndicator.style.color = "#2ecc71";
+    //     }
+    // });
+    
+    // // Функция проверки сложности пароля
+    // function checkPasswordStrength(password) {
+    //     // Проверяем длину
+    //     if (password.length === 0) return {message: "", class: ""};
+    //     if (password.length < 6) return {message: "Слишком короткий", class: "weak"};
+        
+    //     // Проверяем сложность
+    //     const hasLetters = /[a-zA-Zа-яА-Я]/.test(password);
+    //     const hasNumbers = /\d/.test(password);
+    //     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        
+    //     if (hasLetters && hasNumbers && hasSpecial && password.length >= 10) {
+    //         return {message: "Сильный пароль", class: "strong"};
+    //     } else if ((hasLetters && hasNumbers) || (hasLetters && hasSpecial) || (hasNumbers && hasSpecial)) {
+    //         return {message: "Средний пароль", class: "medium"};
+    //     } else {
+    //         return {message: "Слабый пароль", class: "weak"};
+    //     }
+    // }
+    
+    // // Обработка отправки формы
+    // form.addEventListener('submit', function(e) {
+    //     e.preventDefault();
+        
+    //     // Проверка совпадения паролей
+    //     if (newPassword.value !== confirmPassword.value) {
+    //         alert("Пароли не совпадают!");
+    //         return;
+    //     }
+        
+    //     // Проверка сложности (опционально)
+    //     const strength = checkPasswordStrength(newPassword.value);
+    //     if (strength.class === "weak") {
+    //         if (!confirm("Ваш пароль слабый. Вы уверены, что хотите использовать его?")) {
+    //             return;
+    //         }
+    //     }
+        
+    //     // Здесь должна быть AJAX-отправка на сервер
+    //     alert("Пароль успешно изменён!"); // Временное уведомление
+        
+    //     // Закрываем модальное окно
+    //     modal.style.display = "none";
+        
+    //     // Очищаем форму
+    //     form.reset();
+    //     strengthIndicator.textContent = "";
+    //     matchIndicator.textContent = "";
+    // });
+</script>
+
+</body>
+</html>

@@ -56,8 +56,7 @@ CREATE TABLE IF NOT EXISTS Hall (
     hall_id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
     address TEXT NOT NULL,
-    description TEXT NOT NULL,
-    count_likes INTEGER NOT NULL
+    description TEXT NOT NULL  
 )
 ''')
 
@@ -82,6 +81,16 @@ CREATE TABLE IF NOT EXISTS Booking (
     status_for_admin INTEGER,  
     FOREIGN KEY(user_id) REFERENCES User(user_id),  
     FOREIGN KEY(hall_id) REFERENCES Hall(hall_id)
+)
+''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Likes (
+    like_id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    hall_id INTEGER NOT NULL,
+    FOREIGN KEY(hall_id) REFERENCES Hall(hall_id),
+    FOREIGN KEY(user_id) REFERENCES User(user_id)
 )
 ''')
 
@@ -111,23 +120,20 @@ cursor.executemany('''
 halls = [
     (1, 'Бальный зал "Ренессанс"', 
      'ул. Центральная, 1', 
-     'Просторный зал с высокими потолками и хрустальными люстрами', 
-     15),
+     'Просторный зал с высокими потолками и хрустальными люстрами'),
     
     (2, 'Конференц-зал "Бизнес"', 
      'пр. Ленина, 25', 
-     'Современный зал для деловых встреч и конференций', 
-     8),
+     'Современный зал для деловых встреч и конференций'),
     
     (3, 'Танцевальная студия "Грация"', 
      'ул. Творческая, 7', 
-     'Профессиональная танцевальная студия с зеркальными стенами', 
-     23)
+     'Профессиональная танцевальная студия с зеркальными стенами')
 ]
 
 cursor.executemany('''
-    INSERT INTO Hall (hall_id, title, address, description, count_likes)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO Hall (hall_id, title, address, description)
+    VALUES (?, ?, ?, ?)
 ''', halls)
 
 # Связи между залами и оборудованием

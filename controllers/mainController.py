@@ -6,7 +6,8 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route("/")
 def index():
     user = session.get("user")
-    return render_template("main.html", user=user)
+    halls = Halls_actions.get_top_three_halls()
+    return render_template("main.html", user=user, halls=halls)
 
 @main_bp.route("/catalog_page")
 def catalog_page():
@@ -18,22 +19,6 @@ def catalog_page():
 def about_page():  # Исправлено имя функции
     user = session.get("user")
     return render_template("about.html", user=user)
-
-
-
-@main_bp.route("/catalog")
-def catalog():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
-    halls = Halls_actions.get_halls_with_photos()
-    return render_template("catalog.html", halls=halls, user=session["user"])
-
-
-@main_bp.route("/servis_info")
-def servis_info():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
-    return render_template("servis_info.html", user=session["user"])
 
 @main_bp.route("/admin_page")
 def admin_page():

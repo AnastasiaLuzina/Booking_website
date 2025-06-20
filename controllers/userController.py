@@ -5,7 +5,7 @@ import re
 
 from tools.tools_for_base import connect_to_base, close_base, commit_in_base
 import hashlib
-import secrets
+
 
 from flask import Blueprint
 
@@ -14,21 +14,36 @@ user_bp = Blueprint('user', __name__)
 class Checkers:
     
     @staticmethod
+    def take_info(user_id):
+        conn, cursor = connect_to_base()
+        try:
+            cursor.execute("""
+                SELECT user_id, first_name, second_name, patronymic, 
+                       login, email, age, flag_role
+                FROM User 
+                WHERE user_id = ?
+            """, (user_id,))
+            user_data = cursor.fetchone()
+            return user_data
+        finally:
+            close_base(conn)
+
+    @staticmethod
     def is_valid_login(login):
         # Добавляем проверку на None и пустую строку
         if not login or not login.strip():
             return False
         return len(login) >= 6
         
-    @staticmethod
-    def is_password_unique(password):
+    # @staticmethod
+    # def is_password_unique(password):
        
-        hashed_password = Checkers.get_hash_password(password)
-        conn, cursor = connect_to_base()
-        cursor.execute("SELECT * FROM User WHERE password = ?", (hashed_password,))
-        user = cursor.fetchone()
-        close_base(conn)
-        return user is None
+    #     hashed_password = Checkers.get_hash_password(password)
+    #     conn, cursor = connect_to_base()
+    #     cursor.execute("SELECT * FROM User WHERE password = ?", (hashed_password,))
+    #     user = cursor.fetchone()
+    #     close_base(conn)
+    #     return user is None
     
     @staticmethod
     def is_valid_email(email):
@@ -102,8 +117,8 @@ class Checkers:
             # elif not Checkers.is_valid_login(login):
             #     errors.append("Логин должен быть длинее 6 символов")
                 
-            elif not Checkers.is_password_unique(password):
-                errors.append("Этот пароль уже используется другим пользователем")
+            # elif not Checkers.is_password_unique(password):
+            #     errors.append("Этот пароль уже используется другим пользователем")
                 
             elif not Checkers.is_email_unique(email):
                 errors.append("Этот email уже занят")
@@ -183,15 +198,16 @@ def registration():
         age = request.form.get("age")
         password = request.form.get("password")
         flag_role = 0
-        print(first_name, second_name, patronymic, login, email, age, password)
+       
         errors = Checkers.check_registration(first_name, second_name, patronymic, login, email, age, password)
-        print(errors)
+        
         if not errors:
             result = Registration.add_to_base(first_name, second_name, patronymic, login, email, age, password, flag_role)
-            print(result)
+           
             if result[0]:
                     _, user_id, flag_role = result
-                    session["user"] = {"id": user_id, "email": email, "role": flag_role}
+                    session["id"] = user_id 
+                    session["user"] = {"id": user_id, "email": email, "role": flag_role, "login": login}
                     return redirect(url_for('main.index'))  
             else:
                 errors.append(result[1])
@@ -213,10 +229,12 @@ def authorization():
             success, auth_data = Authorization.comparison_to_base(login, password)
             
             if success:
+                session["id"] = auth_data['user_id']  
                 session["user"] = {
                     "id": auth_data['user_id'],
                     "login": login,
-                    "role": auth_data['flag_role']
+                    "role": auth_data['flag_role'],
+                    "email": login if '@' in login else ''  # Для совместимости
                 }
                 
                 if auth_data['flag_role'] == 1:  # Проверка на админа
@@ -236,11 +254,94 @@ def authorization():
         return render_template("authorization.html", errors=errors)
     return render_template("authorization.html", errors=[])
 
+@user_bp.route("/edit_password", methods=["POST"])
+def edit_password():
+    password = request.form.get("password")
+    errors = []
+    if not password:
+        errors.append("Заполните все поля")
+        
+    else:
+        hashed_password = Checkers.get_hash_password(password)
+        user_id = session["user"]["id"]
+        user_data = Checkers.take_info(user_id)
+        user_info = {
+            "id": user_data[0],
+            "first_name": user_data[1],
+            "second_name": user_data[2],
+            "patronymic": user_data[3],
+            "login": user_data[4],
+            "email": user_data[5],
+            "age": user_data[6],
+            "role": "Администратор" if user_data[7] == 1 else "Пользователь"
+        }
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "UPDATE User SET password = ? WHERE user_id = ?",  # Исправлены поля
+                (hashed_password, user_id))
+            conn.commit()
+            close_base(conn)
+            errors.append("Пароль успешно изменен!")
+        except:
+            errors.append("Ошибка с связью бд")
+        
+    return render_template('profile_edit.html', user = user_info,
+                     js_alert=errors)
+    
+@user_bp.route("/edit_user", methods=["POST"])
+def edit_user():
+    
+    first_name = request.form.get("first_name")
+    second_name = request.form.get("second_name")
+    patronymic = request.form.get("patronymic")
+    email = request.form.get("email")
+    age = request.form.get("age")
+    errors = []
+    
+    if not first_name or not second_name or not patronymic or not age or not email:
+        errors.append("Заполните все поля")
+    else:
+        user_id = session["user"]["id"]
+        user_data = Checkers.take_info(user_id)
+        user_info = {
+            "id": user_data[0],
+            "first_name": user_data[1],
+            "second_name": user_data[2],
+            "patronymic": user_data[3],
+            "login": user_data[4],
+            "email": user_data[5],
+            "age": user_data[6],
+            "role": "Администратор" if user_data[7] == 1 else "Пользователь"
+        }
+        login = email.split('@')[0]
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("""
+                UPDATE User SET first_name = ?, second_name = ?, patronymic = ?, email = ?, age = ?, login = ?
+                WHERE user_id = ?""",  # Исправлены поля
+                (first_name, second_name, patronymic, email, age, login, user_id))
+            conn.commit()
+            close_base(conn)
+            errors.append("Изменения успешно сохранены!")
+        except:
+            errors.append("Ошибка с связью бд")
+        
+    return redirect(url_for('profile.profile_edit_page'))
+    
+    
+
 @user_bp.route("/login")
 def login():
     if "user" in session:
         return render_template("authorization.html")
     return redirect(url_for('user.authorization'))
+
+@user_bp.route("/authorization_verification")
+def authorization_verification():
+    if "user" not in session:
+        return 0
+    return 1
 
 
 @user_bp.route("/logout")

@@ -2,6 +2,7 @@ from flask import Blueprint, session, request, render_template, redirect, url_fo
 from tools.tools_for_base import connect_to_base, close_base
 import sqlite3
 from controllers.userController import Checkers
+from controllers.hallController import Halls_actions 
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -100,77 +101,6 @@ class Profile_actions:
             close_base(conn)
 
 
-
-
-
-
-@profile_bp.route("/profile_password", methods=["POST"])
-def password():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
-    
-    errors = []
-    user_id = session["user"]["id"]
-    new_password = request.form.get("password")
-    
-    if Profile_actions.change_password(user_id, new_password, errors):
-        flash("Пароль успешно изменен", "success")
-    else:
-    
-        session['profile_errors'] = errors
-    
-    return redirect(url_for('profile.profile'))
-
-@profile_bp.route("/profile_email", methods=["POST"])
-def email():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
-    
-    errors = []
-    user_id = session["user"]["id"]
-    new_email = request.form.get("email")
-    
-    if Profile_actions.change_email(user_id, new_email, errors):
-        flash("Email успешно изменен", "success")
-    else:
-        session['profile_errors'] = errors
-    
-    return redirect(url_for('profile.profile'))
-
-@profile_bp.route("/profile_login", methods=["POST"])
-def login_change():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
-    
-    errors = []
-    user_id = session["user"]["id"]
-    new_login = request.form.get("login")
-    
-    if Profile_actions.change_login(user_id, new_login, errors):
-        flash("Логин успешно изменен", "success")
-    else:
-        session['profile_errors'] = errors
-    
-    return redirect(url_for('profile.profile'))
-
-@profile_bp.route("/profile_name", methods=["POST"])
-def name_change():
-    if "user" not in session:
-        return redirect(url_for('user.authorization'))
-    
-    errors = []
-    user_id = session["user"]["id"]
-    first_name = request.form.get("first_name")
-    second_name = request.form.get("second_name")
-    patronymic = request.form.get("patronymic")
-    
-    if Profile_actions.change_name(user_id, first_name, second_name, patronymic, errors):
-        flash("Имя успешно изменено", "success")
-    else:
-        session['profile_errors'] = errors
-    
-    return redirect(url_for('profile.profile'))
-
 @profile_bp.route('/profile')
 def profile():
     
@@ -180,7 +110,8 @@ def profile():
     
     user_id = session["user"]["id"]
     user_data = Profile_actions.take_info(user_id)
-    
+    halls_liked = Halls_actions.get_liked_halls(user_id)
+
     if not user_data:
         errors.append("Пользователь не найден")
         return render_template("profile.html", errors=errors)
@@ -196,4 +127,25 @@ def profile():
         "role": "Администратор" if user_data[7] == 1 else "Пользователь"
     }
         
-    return render_template('profile.html', user=user_info, errors=errors)
+    return render_template('profile.html', user=user_info, errors=errors, halls = halls_liked)
+
+@profile_bp.route('/profile_edit_page')
+def profile_edit_page():
+    if 'user' not in session:
+        return redirect(url_for('auth.login'))
+    
+    errors = session.pop('profile_errors', [])
+    user_id = session["user"]["id"]
+    user_data = Profile_actions.take_info(user_id)
+    user_info = {
+        "id": user_data[0],
+        "first_name": user_data[1],
+        "second_name": user_data[2],
+        "patronymic": user_data[3],
+        "login": user_data[4],
+        "email": user_data[5],
+        "age": user_data[6],
+        "role": "Администратор" if user_data[7] == 1 else "Пользователь"
+    }
+        
+    return render_template('profile_edit.html', user=user_info, errors=errors)

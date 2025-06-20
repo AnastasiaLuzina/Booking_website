@@ -1,9 +1,9 @@
 
-from flask import Blueprint, session, request, render_template, redirect, url_for
+from flask import Blueprint, session, request, render_template, redirect, url_for, jsonify
 from tools.tools_for_base import connect_to_base, close_base
 import base64  # Добавьте эту строку
 import sqlite3
-
+from functools import wraps
 
 
 hall_bp = Blueprint('hall', __name__)
@@ -30,10 +30,12 @@ class Halls_actions:
     def get_halls_with_photos():
         conn, cursor = connect_to_base()
         cursor.execute('''
-            SELECT h.hall_id, h.title, p.photo_bytes 
+            SELECT h.hall_id, h.title, 
+                (SELECT p.photo_bytes FROM Photo p 
+                    WHERE p.hall_id = h.hall_id 
+                    ORDER BY p.photo_id LIMIT 1) as cover_photo
             FROM Hall h
-            LEFT JOIN Photo p ON h.hall_id = p.hall_id
-            ORDER BY h.hall_id, p.photo_id
+            ORDER BY h.title
         ''')
         halls_data = cursor.fetchall()
         close_base(conn)
@@ -135,6 +137,88 @@ class Halls_actions:
         except:
             errors.append("Ошибка с связью бд")
         return errors
+    
+    @staticmethod
+    def search_like(hall_id, user_id, errors):
+        try:
+            conn, cursor = connect_to_base()  # Добавлено получение соединения
+            cursor.execute(
+                    "SELECT * FROM Likes WHERE user_id = ? AND hall_id = ?",
+                    (user_id, hall_id))
+            
+            likes = cursor.fetchone()
+            close_base(conn)
+            return likes
+        except:
+            errors.append("Ошибка с связью бд")
+        
+    @staticmethod
+    def get_top_three_halls():
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("""
+                SELECT 
+                    h.hall_id,
+                    h.title,
+                    h.address,
+                    h.description,
+                    (SELECT COUNT(*) FROM Likes l WHERE l.hall_id = h.hall_id) AS likes_count,
+                    (SELECT p.photo_bytes FROM Photo p WHERE p.hall_id = h.hall_id LIMIT 1) AS photo
+                FROM Hall h
+                ORDER BY likes_count DESC
+                LIMIT 3
+            """)
+            
+            top_halls = []
+            for row in cursor.fetchall():
+                top_halls.append({
+                    'hall_id': row[0],
+                    'title': row[1],
+                    'address': row[2],
+                    'description': row[3],
+                    'likes_count': row[4],
+                    'photo': base64.b64encode(row[5]).decode('utf-8') if row[5] else None
+                })
+            
+            return top_halls
+        except Exception as e:
+            print(f"Error getting top halls: {str(e)}")
+            return []
+        finally:
+            if 'cursor' in locals(): cursor.close()
+            if 'conn' in locals(): close_base(conn)
+
+    @staticmethod
+    def get_liked_halls(user_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("""
+                SELECT 
+                    h.hall_id,
+                    h.title,
+                    (SELECT p.photo_bytes FROM Photo p WHERE p.hall_id = h.hall_id LIMIT 1) AS photo
+                FROM Hall h
+                JOIN Likes l ON h.hall_id = l.hall_id
+                WHERE l.user_id = ?
+                ORDER BY h.title
+            """, (user_id,))
+            
+            liked_halls = []
+            for row in cursor.fetchall():
+                liked_halls.append({
+                    'hall_id': row[0],
+                    'title': row[1],
+                    'photo': base64.b64encode(row[2]).decode('utf-8') if row[2] else None
+                })
+            
+            return liked_halls
+        except Exception as e:
+            print(f"Error getting user liked halls: {str(e)}")
+            return []
+        finally:
+            if 'cursor' in locals(): cursor.close()
+            if 'conn' in locals(): close_base(conn)
+
 
 
 
@@ -178,25 +262,53 @@ def get_hall():
     errors = []
     hall_id = request.args.get("hall_id")
     hall = Halls_actions.get_hall(hall_id)
+    user = session.get("user", None)
+    user_id = session.get("id", None)   
     
+    # Добавляем проверку лайка пользователя
+    user_has_liked = False
+    if user and 'id' in user:
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "SELECT 1 FROM Likes WHERE user_id = ? AND hall_id = ?",
+                (user['id'], hall_id)
+            )
+            user_has_liked = cursor.fetchone() is not None
+        except Exception as e:
+            print(f"Error checking like: {e}")
+        finally:
+            if 'cursor' in locals(): cursor.close()
+            if 'conn' in locals(): close_base(conn)
+
     if hall:
-        # Получаем фотографии зала
         conn, cursor = connect_to_base()
         cursor.execute("SELECT photo_id FROM Photo WHERE hall_id = ?", (hall_id,))
         photos = cursor.fetchall()
+        
+        cursor.execute("SELECT COUNT(*) FROM Likes WHERE hall_id = ?", (hall_id,))
+        total_likes = cursor.fetchone()[0]
         close_base(conn)
         
-        # Получаем оборудование зала
         equipment_list = Halls_actions.get_equipment_for_hall(hall_id)
         
         return render_template("hall_detail.html", 
-                              hall=hall, 
-                              photos=photos,
-                              equipment_list=equipment_list)
+                            hall=hall, 
+                            photos=photos,
+                            equipment_list=equipment_list,
+                            total_likes=total_likes,
+                            user=user,
+                            user_has_liked=user_has_liked)  # Добавляем этот параметр
     
     errors.append("Зал не найден")
     return render_template("admin_page.html", errors=errors)
 
+@hall_bp.route("/check_auth", methods=["GET"])
+def check_auth():
+    return jsonify({
+    'authenticated': 'user' in session,
+    'user_id': session.get('id')
+})
 
 @hall_bp.route("/hall_edit/<int:hall_id>", methods=["GET"])
 def edit_form(hall_id):
@@ -220,6 +332,43 @@ def edit(hall_id):
 
     return render_template("admin_page.html", errors=errors)
 
+@hall_bp.route("/hall_likes/<int:hall_id>", methods=['POST'])
+
+def hall_likes(hall_id):
+    if 'user' not in session:
+        return jsonify({'error': 'Not authorized'}), 401
+    user_id = session['user']['id']
+
+    try:
+        conn, cursor = connect_to_base()
+        
+        # Проверяем существование лайка
+        cursor.execute("SELECT 1 FROM Likes WHERE user_id = ? AND hall_id = ?", (user_id, hall_id))
+        existing_like = cursor.fetchone()
+        
+        if existing_like:
+            cursor.execute("DELETE FROM Likes WHERE user_id = ? AND hall_id = ?", (user_id, hall_id))
+            action = 'unliked'
+        else:
+            cursor.execute("INSERT INTO Likes (user_id, hall_id) VALUES (?, ?)", (user_id, hall_id))
+            action = 'liked'
+        
+        cursor.execute("SELECT COUNT(*) FROM Likes WHERE hall_id = ?", (hall_id,))
+        likes_count = cursor.fetchone()[0]
+        
+        conn.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'action': action,
+            'likes_count': likes_count
+        })
+        
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): close_base(conn)
 
 
 

@@ -12,26 +12,26 @@
     <main>
         <h2 style="text-align: center; margin-top: 20px;">Каталог залов</h2>
         
-        <div class="catalog">
-    {% for item in halls %}
-    <div class="hall-card">
-            <!-- Обертка для кликабельных элементов -->
-            <a href="/hall?hall_id={{ item.hall_id }}" class="hall-content">
-                <h3>{{ item.title }}</h3>
+    <div class="catalog">
+        {% for item in halls %}
+        <div class="hall-card">
+                <!-- Обертка для кликабельных элементов -->
+                <a href="/hall?hall_id={{ item.hall_id }}" class="hall-content">
+                    <h3>{{ item.title }}</h3>
+                    
+                    {% if item.photo %}
+                    <div class="hall-photo">
+                        <img src="data:image/jpeg;base64,{{ item.photo }}" alt="{{ item.title }}">
+                    </div>
+                    {% else %}
+                    <div class="no-photo">Изображение отсутствует</div>
+                    {% endif %}
+                </a>
                 
-                {% if item.photo %}
-                <div class="hall-photo">
-                    <img src="data:image/jpeg;base64,{{ item.photo }}" alt="{{ item.title }}">
-                </div>
-                {% else %}
-                <div class="no-photo">Изображение отсутствует</div>
-                {% endif %}
-            </a>
-            
-            <!-- Кнопка бронирования внутри карточки -->
-            <a class="booking-link" href="{{ url_for('booking.booking_main', hall_id=item.hall_id) }}">
-                Забронировать
-            </a>
+                <!-- Кнопка бронирования внутри карточки -->
+                <a class="booking-link" href="{{ url_for('booking.booking_main', hall_id=item.hall_id) }}">
+                    Забронировать
+                </a>
         </div>
         {% endfor %}
     </div>
