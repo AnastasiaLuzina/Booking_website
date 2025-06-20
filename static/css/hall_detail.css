@@ -1,8 +1,29 @@
-/* Основные стили */
+
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e6f7ff;
+    color: #333;
+    min-height: 100vh; /* Важно: минимальная высота равна высоте viewport */
+    display: flex; /* Включаем flex */
+    flex-direction: column; /* Колонка для размещения футера внизу */
+}
+.main-content {
+    flex: 1; /* Занимает все доступное пространство, выталкивая футер вниз */
+}
+
 .hall-detail-container {
     max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
+    
+    
 }
 
 .hall-detail-container h1 {
@@ -17,6 +38,74 @@
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
+}
+
+/* Шапка */
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+}
+header {
+    background-color: #e6f7ff;
+    padding: 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+nav ul a:hover {
+    color: #0056b3;
+}
+
+nav ul li a.button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;  /* Чуть меньше padding для навигации */
+    margin-left: 15px;   /* Отступ от других пунктов меню */
+    margin-top: -15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;  /* Убираем подчеркивание */
+    display: inline-block;
+    transition: background-color 0.3s ease; /* Плавное изменение цвета */
+}
+
+/* Эффект при наведении */
+nav ul li a.button:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}
+
+/* Эффект при нажатии */
+nav ul li a.button:active {
+    background-color: #003d7a;
+    transform: translateY(1px);
+}
+
+/* Подчеркивание активной ссылки в меню */
+nav ul li a.active {
+    color: #333; /* Цвет текста */ /* Цвет подчеркивания */
+    text-decoration: underline; 
+    text-decoration-color: #007bff;
+    text-decoration-thickness: 3px;
+}
+
+nav ul a:hover {
+    color: #0056b3;
 }
 
 /* Секция с фотографиями */
@@ -73,23 +162,40 @@
     object-fit: cover;
 }
 
-/* Секция с информацией */
+/* Обновленные стили для секции с информацией */
 .hall-info-section {
     flex: 1;
     min-width: 300px;
+    display: flex; /* Добавляем flex */
 }
 
 .info-card {
     background: white;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
+
+.info-card h2 {
+    color: #0d47a1;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e3f2fd;
+}
+
+/* Остальные стили остаются без изменений */
 
 .info-item {
     display: flex;
     align-items: flex-start;
     margin-bottom: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .info-item i {
@@ -99,37 +205,70 @@
     min-width: 24px;
 }
 
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item i {
+    color: #1e6bdc;
+    font-size: 1.2rem;
+    margin-right: 15px;
+    min-width: 24px;
+}
+
 .equipment-list {
     columns: 2;
     -webkit-columns: 2;
-    -moz-columns: 2;
-    margin: 15px 0 25px;
-    padding-left: 20px;
+    
+    margin: 20px 0;
+    padding-left: 0;
+    list-style-type: none;
 }
 
 .equipment-list li {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+
+
+
+.action-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e3f2fd;
 }
 
 /* Кнопки и элементы управления */
-.likes-section {
+/* Новые стили для блока под фото */
+.photo-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e3f2fd;
+}
+
+.likes-row {
     display: flex;
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
 }
 
+
 .likes-count {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #0d47a1;
+    min-width: 30px;
+    text-align: center;
 }
 
 .like-button {
     padding: 8px 20px;
     background: #f5f7fa;
     border: 1px solid #1e6bdc;
-    border-radius: 4px;
+    border-radius: 20px;
     color: #0d47a1;
     font-weight: 500;
     cursor: pointer;
@@ -139,58 +278,43 @@
     gap: 8px;
 }
 
-.like-button:hover {
-    background: #e3f2fd;
+.booking-form {
+    width: 100%;
 }
 
-.like-button.liked {
-    background: #ffebee;
-    border-color: #f44336;
-    color: #f44336;
-}
 
 .book-button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     background: linear-gradient(135deg, #1e6bdc, #0d47a1);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 20px;
 }
 
-.book-button:hover {
-    background: linear-gradient(135deg, #0d47a1, #1e6bdc);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(13, 71, 161, 0.3);
+/* Изменения в существующих стилях */
+.hall-photos-section {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Календарь/расписание */
-.schedule {
-    margin-top: 20px;
+.main-photo {
+    flex-grow: 1;
+    margin-bottom: 15px;
 }
 
-.date-picker {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #b0bec5;
-    border-radius: 4px;
-    font-size: 1rem;
-    margin-top: 10px;
-}
+
 
 /* Подвал */
 footer {
-    
     background-color: #fff;
     padding: 20px;
-    
-    left: 0;
-    bottom: 0;
     width: 100%;
     height: 80px;
     

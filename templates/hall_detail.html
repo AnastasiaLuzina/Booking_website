@@ -9,69 +9,66 @@
 </head>
 <body>
     {% include 'header.html' %}
-    <main class="hall-detail-container">
-        <h1>{{ hall[1] }}</h1>
-        
-        <div class="hall-content">
-            <div class="hall-photos-section">
-                {% if photos %}
-                <div class="main-photo">
-                    <img src="{{ url_for('photo.get_photo', photo_id=photos[0][0]) }}" alt="{{ hall[1] }}">
-                </div>
-                {% if photos|length > 1 %}
-                <div class="thumbnail-container">
-                    {% for photo in photos %}
-                    <div class="thumbnail">
-                        <img src="{{ url_for('photo.get_photo', photo_id=photo[0]) }}" alt="Фото {{ hall[1] }}">
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                {% else %}
-                <div class="no-photo">Изображение отсутствует</div>
-                {% endif %}
-                
-                <div class="likes-section">
-                    <span class="likes-count">{{ hall[4] }}</span>
-                    <button class="like-button"><i class="fas fa-heart"></i> Нравится</button>
-                </div>
-                
-                <button class="book-button" 
-                        onclick="window.location.href='{{ url_for('booking.booking_main', hall_id=hall[0]) }}'">
-                    Забронировать
-                </button> 
-                
-            </div>
+    <div class="main-content">
+        <div class="hall-detail-container">
+            <h1>{{ hall[1] }}</h1>
             
-            <div class="hall-info-section">
-                <div class="info-card">
-                    <h2>Информация о зале</h2>
-                    <div class="info-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>{{ hall[2] }}</span>
+            <div class="hall-content">
+                <div class="hall-photos-section">
+                    {% if photos %}
+                    <div class="main-photo">
+                        <img src="{{ url_for('photo.get_photo', photo_id=photos[0][0]) }}" alt="{{ hall[1] }}">
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-info-circle"></i>
-                        <span>{{ hall[3] }}</span>
-                    </div>
-                    
-                    <h2>Оборудование</h2>
-                    <ul class="equipment-list">
-                        {% for equipment in equipment_list %}
-                        <li>{{ equipment[0] }}</li>
+                    {% if photos|length > 1 %}
+                    <div class="thumbnail-container">
+                        {% for photo in photos %}
+                        <div class="thumbnail">
+                            <img src="{{ url_for('photo.get_photo', photo_id=photo[0]) }}" alt="Фото {{ hall[1] }}">
+                        </div>
                         {% endfor %}
-                    </ul>
-                    
-                    <h2>Доступное время</h2>
-                    <div class="schedule">
-                        <!-- Здесь будет календарь/расписание -->
-                        <p>Выберите дату для просмотра доступного времени</p>
-                        <input type="date" class="date-picker">
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="no-photo">Изображение отсутствует</div>
+                    {% endif %}
+                </div>
+                
+                <div class="hall-info-section">
+                    <div class="info-card">
+                        <h2>Информация о зале</h2>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ hall[2] }}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span>{{ hall[3] }}</span>
+                        </div>
+                        
+                        <h2>Оборудование</h2>
+                        <ul class="equipment-list">
+                            {% for equipment in equipment_list %}
+                            <li>{{ equipment[0] }}</li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <div class="action-section">
+                            <div class="likes-row">
+                                <span class="likes-count">{{ hall[4] }}</span>
+                                <button class="like-button"><i class="fas fa-heart"></i> Нравится</button>
+                            </div>
+                            
+                            <button class="book-button" 
+                                    onclick="window.location.href='{{ url_for('booking.booking_main', hall_id=hall[0]) }}'">
+                                Забронировать
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+    
     {% include 'footer.html' %}
     <script>
         // Скрипт для переключения главного изображения при клике на миниатюру

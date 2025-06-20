@@ -169,17 +169,44 @@ nav ul a:hover {
     margin-bottom: 30px;
 }
 
-.placeholder-grid {
+.benefits-grid {
     display: flex;
     justify-content: space-around;
-    gap: 20px;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
 }
 
-.placeholder {
-    width: 200px;
-    height: 200px;
-    background-color: #ddd;
-    border-radius: 10px;
+.benefit-card {
+    width: 220px;
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.benefit-icon {
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+
+.benefit-card h3 {
+    color: #0d47a1;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.benefit-card p {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.4;
 }
 
 /* Топ 3 площадки */
