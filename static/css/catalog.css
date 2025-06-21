@@ -91,7 +91,7 @@ main {
     display: flex;
     flex-wrap: wrap;
     gap: 30px; /* Увеличим расстояние между карточками */
-    padding: 20px;
+    padding: 40px;
     justify-content: center;
 }
 
@@ -101,7 +101,7 @@ main {
     border: 1px solid #1e6bdc;
     border-radius: 8px;
     padding: 20px; /* Увеличим внутренний отступ */
-    width: 300px;
+    width: 350px;
     box-shadow: 0 4px 8px rgba(30, 107, 220, 0.2);
     background-color: #fff;
     transition: transform 0.3s ease, box-shadow 0.3s ease;

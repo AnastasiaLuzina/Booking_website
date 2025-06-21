@@ -28,23 +28,26 @@ class Halls_actions:
     
     @staticmethod
     def get_halls_with_photos():
-        conn, cursor = connect_to_base()
-        cursor.execute('''
-            SELECT h.hall_id, h.title, 
-                (SELECT p.photo_bytes FROM Photo p 
-                    WHERE p.hall_id = h.hall_id 
-                    ORDER BY p.photo_id LIMIT 1) as cover_photo
-            FROM Hall h
-            ORDER BY h.title
-        ''')
-        halls_data = cursor.fetchall()
-        close_base(conn)
-        
-        return [{
-            'hall_id': hall_id,
-            'title': title,
-            'photo': base64.b64encode(photo_bytes).decode('utf-8') if photo_bytes else None
-        } for hall_id, title, photo_bytes in halls_data]
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute('''
+                SELECT h.hall_id, h.title, 
+                    (SELECT p.photo_bytes FROM Photo p 
+                        WHERE p.hall_id = h.hall_id 
+                        ORDER BY p.photo_id LIMIT 1) as cover_photo
+                FROM Hall h
+                ORDER BY h.title
+            ''')
+            halls_data = cursor.fetchall()
+            close_base(conn)
+            
+            return [{
+                'hall_id': hall_id,
+                'title': title,
+                'photo': base64.b64encode(photo_bytes).decode('utf-8') if photo_bytes else None
+            } for hall_id, title, photo_bytes in halls_data]
+        except:
+            return None
         
     @staticmethod
     def get_hall_full(hall_id):
