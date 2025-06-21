@@ -15,16 +15,32 @@ booking_bp = Blueprint('booking', __name__)
 time_slots_cache = defaultdict(lambda: defaultdict(dict))
 
 class BookingActions:
-    
+
+    @staticmethod
+    def get_booked_intervals(hall_id, date):
+        conn, cursor = connect_to_base()
+        try:
+            cursor.execute("""
+                SELECT start_time, end_time 
+                FROM Booking 
+                WHERE hall_id = ? AND date = ? AND status_for_admin = 1
+            """, (hall_id, date))
+            return cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"Error fetching booked intervals: {str(e)}")
+            return []
+        finally:
+            close_base(conn)
+        
     @staticmethod
     def get_available_slots(hall_id, date):
         conn, cursor = connect_to_base()
         try:
-            # Получаем занятые слоты
+            # Получаем занятые слоты (исправлено название таблицы)
             cursor.execute("""
                 SELECT start_time
-                FROM Bookings
-                WHERE hall_id = ? AND date = ? AND status = 'confirmed'
+                FROM Booking
+                WHERE hall_id = ? AND date = ? AND status_for_admin = 1
             """, (hall_id, date))
             booked_slots = [row[0] for row in cursor.fetchall()]
             
@@ -151,26 +167,21 @@ class BookingActions:
         return all(slot in available_slots for slot in interval_slots)
     
     @staticmethod
-    def create_booking(user_id, hall_id, booking_date, start_time, end_time):
-        """Создает бронирование в базе данных"""
+    def create_booking(user_id, hall_id, booking_date, start_time, end_time, status_for_admin=1):
         conn, cursor = connect_to_base()
         try:
-            # Рассчитываем продолжительность
-            start_dt = datetime.strptime(start_time, '%H:%M')
-            end_dt = datetime.strptime(end_time, '%H:%M')
-            duration = (end_dt - start_dt).total_seconds() / 60  # в минутах
-            
+            # Преобразуем дату в формат YYYY-MM-DD если нужно
+            if '.' in booking_date:
+                parts = booking_date.split('.')
+                booking_date = f"{parts[2]}-{parts[1]}-{parts[0]}"
+                
             # Создаем бронирование
             cursor.execute("""
-                INSERT INTO Bookings (user_id, hall_id, date, start_time, end_time, duration, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (user_id, hall_id, booking_date, start_time, end_time, duration, 'confirmed'))
-            
+                INSERT INTO Booking (user_id, hall_id, date, start_time, end_time, status_for_admin)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (user_id, hall_id, booking_date, start_time, end_time, status_for_admin))
+
             commit_in_base(conn)
-            
-            # Обновляем кэш
-            BookingActions.update_slots_cache(hall_id, booking_date)
-            
             return True, "Бронирование успешно создано"
         except sqlite3.Error as e:
             return False, f"Ошибка при создании брони: {str(e)}"
@@ -179,8 +190,8 @@ class BookingActions:
 
 @booking_bp.route("/booking/<int:hall_id>", methods=['GET'])
 def booking_main(hall_id):
-    # if "user" not in session:
-    #     return redirect(url_for('user.authorization'))
+    if "user" not in session:
+        return redirect(url_for('user.authorization'))
     
     hall = Halls_actions.get_hall_by_id(hall_id)
     
@@ -218,29 +229,14 @@ def get_slots():
         return jsonify({'error': 'Missing parameters'}), 400
     
     try:
-        # Генерируем все возможные слоты (9:00-16:45 с шагом 15 мин)
-        all_slots = []
-        for hour in range(9, 17):
-            for minute in [0, 15, 30, 45]:
-                if hour == 16 and minute > 45:
-                    continue
-                all_slots.append(f"{hour}:{minute:02d}")
-        
-        # Здесь должна быть логика получения занятых слотов из БД
-        # Заглушка для примера:
-        booked_slots = []
-        if hour % 2 == 0:  # Пример: каждый четный час занят
-            booked_slots = [f"{hour}:{minute:02d}" for hour in range(10, 17, 2) for minute in [0, 15, 30, 45]]
-        
-        available_slots = [slot for slot in all_slots if slot not in booked_slots]
-        
+        # Получаем реальные данные о доступных слотах
+        result = BookingActions.get_available_slots(hall_id, booking_date)
         return jsonify({
-            'available': available_slots,
-            'booked': booked_slots
+            'available': result['available_slots'],
+            'booked': result['booked_slots']
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 @booking_bp.route("/booking/select_time", methods=['GET', 'POST'])
 def select_time():
@@ -371,3 +367,60 @@ def confirm_booking():
         },
         hall=hall
     )
+
+@booking_bp.route("/booking/create", methods=['POST'])
+def create_booking():
+    if "user" not in session:
+        return jsonify({'success': False, 'message': 'Требуется авторизация'}), 401
+
+    data = request.get_json()
+    required = ['hall_id', 'date', 'start_time', 'end_time']
+    if not all(param in data for param in required):
+        return jsonify({'success': False, 'message': 'Недостаточно данных'}), 400
+
+    hall_id = data['hall_id']
+    booking_date = data['date']
+    start_time = data['start_time']
+    end_time = data['end_time']
+
+    # Проверка формата времени
+    try:
+        datetime.strptime(start_time, '%H:%M')
+        datetime.strptime(end_time, '%H:%M')
+    except ValueError:
+        return jsonify({'success': False, 'message': 'Неверный формат времени'}), 400
+
+    # Проверка доступности слотов
+    is_available = BookingActions.check_booking_availability(hall_id, booking_date, start_time, end_time)
+    if not is_available:
+        return jsonify({'success': False, 'message': 'Слоты заняты'}), 400
+
+    user_id = session['user']['id']
+    status_for_admin = 1  # Активное бронирование
+    success, message = BookingActions.create_booking(user_id, hall_id, booking_date, start_time, end_time, status_for_admin)
+
+    return jsonify({
+        'success': success,
+        'message': message
+    }), 200 if success else 400
+    
+@booking_bp.route("/booking/booked_intervals", methods=['GET'])
+def get_booked_intervals():
+    hall_id = request.args.get('hall_id')
+    date = request.args.get('date')
+    
+    if not hall_id or not date:
+        return jsonify({'error': 'Missing parameters'}), 400
+    
+    try:
+        intervals = BookingActions.get_booked_intervals(hall_id, date)
+        # Преобразуем в удобный для фронтенда формат
+        formatted_intervals = []
+        for start, end in intervals:
+            formatted_intervals.append({
+                'start': start,
+                'end': end
+            })
+        return jsonify(formatted_intervals)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500  # Исправлено - закрыта скобка
