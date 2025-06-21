@@ -194,6 +194,7 @@ def booking_main(hall_id):
         return redirect(url_for('user.authorization'))
     
     hall = Halls_actions.get_hall_by_id(hall_id)
+    user = session.get("user")
     
     # Генерация данных для календаря
     today = datetime.today()
@@ -216,7 +217,9 @@ def booking_main(hall_id):
         hall=hall,
         week_days=week_days,
         time_slots=time_slots,
-        current_date=datetime.now().strftime("%B %Y")
+        current_date=datetime.now().strftime("%B %Y"),
+        user=user,  # Передаем пользователя в шаблон
+        current_date_iso=datetime.now().date().isoformat()  # Добавьте эту строку
     )
     
 
@@ -414,13 +417,13 @@ def get_booked_intervals():
     
     try:
         intervals = BookingActions.get_booked_intervals(hall_id, date)
-        # Преобразуем в удобный для фронтенда формат
+        # Исправляем формат данных
         formatted_intervals = []
-        for start, end in intervals:
+        for interval in intervals:
             formatted_intervals.append({
-                'start': start,
-                'end': end
+                'start': interval[0],  # Первый элемент кортежа
+                'end': interval[1]     # Второй элемент кортежа
             })
         return jsonify(formatted_intervals)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500  # Исправлено - закрыта скобка
+        return jsonify({'error': str(e)}), 500
