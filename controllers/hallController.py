@@ -166,9 +166,14 @@ class Halls_actions:
                     h.address,
                     h.description,
                     (SELECT COUNT(*) FROM Likes l WHERE l.hall_id = h.hall_id) AS likes_count,
-                    (SELECT p.photo_bytes FROM Photo p WHERE p.hall_id = h.hall_id LIMIT 1) AS photo
+                    (SELECT p.photo_bytes FROM Photo p WHERE p.hall_id = h.hall_id LIMIT 1) AS photo,
+                    COUNT(b.booking_id) AS booking_count
                 FROM Hall h
-                ORDER BY likes_count DESC
+                LEFT JOIN Booking b ON h.hall_id = b.hall_id 
+                    AND strftime('%Y-%m', b.date) = strftime('%Y-%m', 'now')
+                    
+                GROUP BY h.hall_id, h.title, h.address, h.description
+                ORDER BY booking_count DESC
                 LIMIT 3
             """)
             
@@ -180,16 +185,18 @@ class Halls_actions:
                     'address': row[2],
                     'description': row[3],
                     'likes_count': row[4],
-                    'photo': base64.b64encode(row[5]).decode('utf-8') if row[5] else None
+                    'photo': base64.b64encode(row[5]).decode('utf-8') if row[5] else None,
+                    'booking_count': row[6]  # Добавляем количество бронирований
                 })
             
             return top_halls
         except Exception as e:
-            print(f"Error getting top halls: {str(e)}")
+            print(f"Error getting top halls by bookings: {str(e)}")
             return []
         finally:
             if 'cursor' in locals(): cursor.close()
             if 'conn' in locals(): close_base(conn)
+    
 
     @staticmethod
     def get_liked_halls(user_id):

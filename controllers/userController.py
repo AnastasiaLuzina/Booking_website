@@ -1,4 +1,4 @@
-from flask import Flask, session, request, render_template, redirect, url_for
+from flask import Flask, session, request, render_template, redirect, url_for, flash
 
 import sqlite3
 import re
@@ -76,8 +76,8 @@ class Checkers:
     def check_authorization(login, password):
         errors = []
         if not login or not password:
-            errors.append("Заполните все поля")
-            return errors
+            flash("Необходимо заполниь все поля", "danger")
+            errors = "Необходимо заполниь все поля"
         
         return errors
 
@@ -95,7 +95,7 @@ class Checkers:
     def check_registration(first_name, second_name, patronymic, login, email, age, password):
         errors = []
         if not all([first_name, second_name, patronymic, login, email, age, password]):
-            print(1)
+            flash("Заполните все поля", "danger")
             errors.append("Заполните все поля")
         else:
 
@@ -103,13 +103,16 @@ class Checkers:
                 age = int(age)
             except ValueError:
                 errors.append("Возраст должен быть числом")
+                flash("Возраст должен быть числом", "danger")
                 age = 0 # Возвращаем ошибки сразу
             
             if not all(name.isalpha() for name in [first_name, second_name, patronymic]):
                 errors.append("ФИО не должны содержать цифры или символы")
+                flash("ФИО не должны содержать цифры или символы", "danger")
                 
             elif not Checkers.is_valid_email(email):
                 errors.append("Некорректный email")
+                flash("Некорректный email", "danger")
                 
             # elif not Checkers.is_login_unique(login):
             #     errors.append("Этот логин уже занят")
@@ -122,6 +125,7 @@ class Checkers:
                 
             elif not Checkers.is_email_unique(email):
                 errors.append("Этот email уже занят")
+                flash("Этот email уже занят", "danger")
         return errors
 
 
@@ -165,10 +169,10 @@ class Authorization:
             conn, cursor = connect_to_base()
             
             cursor.execute("""
-    SELECT user_id, password, flag_role 
-    FROM User 
-    WHERE (email = ? OR login = ?) AND password = ?
-""", (login, login, Checkers.get_hash_password(password)))
+                                SELECT user_id, password, flag_role 
+                                FROM User 
+                                WHERE (email = ? OR login = ?) AND password = ?
+                            """, (login, login, Checkers.get_hash_password(password)))
             
             user = cursor.fetchone()
             
@@ -219,6 +223,8 @@ def registration():
 
 @user_bp.route("/authorization", methods=["GET", "POST"])
 def authorization():
+    
+
     if request.method == "POST":
         login = request.form.get("login")
         password = request.form.get("password")
@@ -249,7 +255,7 @@ def authorization():
                 else:
                     return redirect(url_for('main.index'))
             else:
-                errors.append(auth_data)  # Добавляем сообщение об ошибке
+                flash(auth_data, "danger")  # Добавляем сообщение об ошибке
                 
         return render_template("authorization.html", errors=errors)
     return render_template("authorization.html", errors=[])
@@ -291,42 +297,33 @@ def edit_password():
     
 @user_bp.route("/edit_user", methods=["POST"])
 def edit_user():
-    
     first_name = request.form.get("first_name")
     second_name = request.form.get("second_name")
     patronymic = request.form.get("patronymic")
     email = request.form.get("email")
     age = request.form.get("age")
-    errors = []
     
-    if not first_name or not second_name or not patronymic or not age or not email:
-        errors.append("Заполните все поля")
-    else:
+    if not all([first_name, second_name, patronymic, email, age]):
+        flash("Заполните все обязательные поля", "danger")
+        return redirect(url_for('profile.profile_edit_page'))
+    
+    try:
         user_id = session["user"]["id"]
-        user_data = Checkers.take_info(user_id)
-        user_info = {
-            "id": user_data[0],
-            "first_name": user_data[1],
-            "second_name": user_data[2],
-            "patronymic": user_data[3],
-            "login": user_data[4],
-            "email": user_data[5],
-            "age": user_data[6],
-            "role": "Администратор" if user_data[7] == 1 else "Пользователь"
-        }
         login = email.split('@')[0]
-        try:
-            conn, cursor = connect_to_base()
-            cursor.execute("""
-                UPDATE User SET first_name = ?, second_name = ?, patronymic = ?, email = ?, age = ?, login = ?
-                WHERE user_id = ?""",  # Исправлены поля
-                (first_name, second_name, patronymic, email, age, login, user_id))
-            conn.commit()
-            close_base(conn)
-            errors.append("Изменения успешно сохранены!")
-        except:
-            errors.append("Ошибка с связью бд")
-        
+        conn, cursor = connect_to_base()
+        cursor.execute("""
+            UPDATE User SET first_name = ?, second_name = ?, patronymic = ?, email = ?, age = ?, login = ?
+            WHERE user_id = ?""",
+            (first_name, second_name, patronymic, email, age, login, user_id))
+        conn.commit()
+        flash("Изменения успешно сохранены!", "success")
+    except Exception as e:
+        print(f"Database error: {str(e)}")
+        flash("Ошибка при сохранении изменений", "danger")
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): close_base(conn)
+    
     return redirect(url_for('profile.profile_edit_page'))
     
     

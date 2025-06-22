@@ -90,8 +90,9 @@ body {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
-    max-width: 800px;
-    margin: 30px auto;
+    max-width: 900px;
+    
+    margin: 40px auto;
 }
 
 .profile-edit-card h2 {
@@ -195,23 +196,47 @@ body {
     transform: translateY(-2px);
 }
 
-/* Сообщения об ошибках */
-.error-message {
-    background-color: #fee;
-    border-left: 4px solid #e74c3c;
-    padding: 15px;
-    margin: 20px 0;
-    border-radius: 0 4px 4px 0;
+/* Универсальные стили для flash-сообщений */
+.flash-messages {
+    width: 100%;
+    
 }
 
-.error-message p {
-    color: #e74c3c;
-    margin: 5px 0;
+.alert {
+    padding: 12px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
     font-size: 14px;
+    animation: fadeInDown 0.3s ease-out;
 }
 
-.error-message i {
-    margin-right: 8px;
+.alert i {
+    margin-right: 10px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 /* Стили модального окна */
 .modal {

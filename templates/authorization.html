@@ -14,13 +14,6 @@
         <div class="login-container">
             <h2>Авторизация</h2>
 
-            {% if errors %}
-                <div class="error-container">
-                    {% for error in errors %}
-                        <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
             <form action="{{ url_for('user.authorization') }}" method="post">
                 <label for="username">Учетная запись</label>
                 <input type="text" id="login" name="login" placeholder="qwerty435">
@@ -28,13 +21,17 @@
                 <label for="password">Пароль</label>
                 <input type="password" id="password" name="password" placeholder="password123">
 
+                {% include 'flash_message.html' %}
+
                 <button type="submit">Войти</button>
 
                 <p class="register-link">Нет аккаунта? <a href="{{ url_for('user.registration') }}">Регистрация</a></p>
             </form>
         </div>
     </main>
-
+    
+    
+    
     {% include 'footer.html' %}
 </body>
 </html>
