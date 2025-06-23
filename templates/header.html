@@ -1,6 +1,14 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
 <header>
+    
     <div class="logo">LET'S DANCE</div>
-    <nav>
+     <button id="burgerButton" class="mobile-menu-btn" aria-label="Меню">
+        <span class="burger-icon">☰</span>
+    </button>
+    <nav class="desktop-menu">
         <ul class="nav-links">
             <li><a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}active{% endif %}">Главная</a></li>
             <li><a href="{{ url_for('main.catalog_page') }}" class="{% if request.endpoint == 'main.catalog_page' %}active{% endif %}">Каталог</a></li>
@@ -18,5 +26,39 @@
         {% endif %}
         </ul>
     </nav>
+     <!-- Мобильное меню (скрыто по умолчанию) -->
+    <nav id="mobileMenu" class="mobile-menu-container">
+        <ul>
+                <li><a href="{{ url_for('main.index') }}">Главная</a></li>
+                <li><a href="{{ url_for('main.catalog_page') }}">Каталог</a></li>
+                <li><a href="{{ url_for('main.about_page') }}">О сервисе</a></li>
+                {% if user %}
+                    <li><a href="{{ url_for('profile.profile') }}">Личный кабинет</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('user.authorization') }}" class="mobile-button">Войти</a></li>
+                {% endif %}
+        </ul>
+    </nav>
 </header>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const burgerBtn = document.getElementById('burgerButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (burgerBtn && mobileMenu) {
+        burgerBtn.addEventListener('click', function() {
+            // Переключаем видимость меню
+            mobileMenu.classList.toggle('active');
+            
+            // Меняем иконку (опционально)
+            this.classList.toggle('open');
+            
+            // Блокируем прокрутку страницы (опционально)
+            document.body.classList.toggle('no-scroll');
+        });
+    } else {
+        console.error('Не найдены элементы меню');
+    }
+});
+</script>
 

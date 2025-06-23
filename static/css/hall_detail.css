@@ -41,6 +41,83 @@ body {
 }
 
 /* Шапка */
+/* Шапка (базовые стили) */
+.desktop-menu {
+    display: block; /* Показываем на ПК */
+}
+
+/* Кнопка бургера */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    color: #007bff;
+    font-size: 29px;
+}
+.mobile-menu-btn.open {
+    transform: rotate(90deg);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Блокировка прокрутки */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Мобильное меню */
+.mobile-menu-container {
+    position: fixed;
+    top: 70px; /* Высота шапки */
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    z-index: 1000;
+    transition: max-height 0.3s ease;
+}
+
+.mobile-menu-container.active {
+    max-height: 80vh; /* 80% высоты экрана */
+    overflow-y: auto;
+}
+
+/* Кнопка бургера */
+#burgerButton {
+    display: none; /* По умолчанию скрыта */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
+
 .logo {
     font-size: 20px;
     font-weight: bold;
@@ -349,5 +426,218 @@ footer {
     
     .equipment-list {
         columns: 1;
+    }
+}
+
+/* Адаптация для мобилок (только изменения!) */
+@media (max-width: 768px) {
+
+    #burgerButton {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none;
+    }
+    /* Шапка */
+    nav ul {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    header {
+        padding: 10px;
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+    
+    
+    
+    /* Основной контент */
+    body {
+        padding: 10px;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    .hall-detail-container {
+        width: 100%;
+        max-width: 100%;
+        margin: auto;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Секция с фотографиями */
+    .hall-photos-section {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .main-photo img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .thumbnail-container {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 10px;
+    }
+
+    .thumbnail {
+        flex: 0 0 80px;
+        height: 80px;
+        flex-shrink: 0;
+    }
+
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    .no-photo {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+        color: #aaa;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    /* Информационная секция */
+    .hall-info-section {
+        width: 100%;
+    }
+
+    .info-card {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+    }
+
+    .equipment-list {
+        list-style: disc inside;
+        padding-left: 1em;
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    /* Действия: лайк и бронирование */
+    .action-section {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .likes-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .like-button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: none;
+        background-color: #e3f2fd;
+        color: #1e6bdc;
+        cursor: pointer;
+        flex-grow: 1;
+        justify-content: center;
+    }
+
+    .like-button.liked {
+        background-color: #ffe0e0;
+        color: #d32f2f;
+    }
+
+    .likes-count {
+        font-size: 1rem;
+        font-weight: bold;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    .book-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        background-color: #1e6bdc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .book-button:hover {
+        background-color: #165bb8;
+    }
+
+    /* Подвал */
+    footer {
+        padding: 10px;
+        margin-top: 15px;
+    }
+    
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+}
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .member-info {
+        padding: 10px;
+    }
+    .member-name {
+        font-size: 1.2em;
+    }
+    .member-bio {
+        font-size: 0.8em;
     }
 }
