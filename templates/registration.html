@@ -43,13 +43,7 @@
                         <label for="password">Пароль</label>
                         <input type="password"name="password" placeholder="password1234">
                     </div>
-                    {% if errors %}
-                        <div class="error-message">
-                            {% for error in errors %}
-                                <div class="error-message">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    {% include 'flash_message.html' %}
 
                     <!-- Кнопка отправки -->
                     <button type="submit" class="submit-btn">Создать аккаунт</button>

@@ -1,0 +1,496 @@
+:root {
+            --primary: #4361ee;
+            --primary-light: #e6f7ff;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --border: #dee2e6;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9fbfd;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #3a56d4);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info span {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+        
+        .admin-nav ul {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .admin-nav li {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .admin-nav li:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .admin-nav li.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .add-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background-color: #3a56d4;
+            transform: translateY(-2px);
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-container h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .cancel-btn, .save-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border);
+            color: var(--dark);
+        }
+        
+        .cancel-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .save-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+        }
+        
+        .save-btn:hover {
+            background-color: #218838;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .hall-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .hall-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        
+        .hall-image {
+            height: 180px;
+            overflow: hidden;
+        }
+        
+        .hall-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .hall-card:hover .hall-image img {
+            transform: scale(1.05);
+        }
+        
+        .hall-info {
+            padding: 20px;
+        }
+        
+        .hall-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .hall-info p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hall-actions {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .delete-form {
+            display: flex;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background-color: #bd2130;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .data-table th {
+            background-color: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 15px 20px;
+            font-weight: 500;
+        }
+        
+        .data-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .photo-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .photo-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-preview .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+                /* Добавьте в admin.css */
+        /* Стили для формы добавления зала */
+        #addHallForm {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .upload-btn {
+            background-color: var(--primary-light);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-btn i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-btn span {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .photo-requirements {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Улучшения для превью фотографий */
+        .photo-preview {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .remove-photo:hover {
+            background: var(--danger);
+            transform: scale(1.1);
+        }
+
+        /* Анимация появления формы */
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container:not(.hidden) {
+            animation: slideDown 0.4s ease-out;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-container {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .hall-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-nav ul {
+                flex-direction: column;
+            }
+            
+            .form-columns {
+                flex-direction: column;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .user-info {
+                justify-content: center;
+            }
+        }

@@ -231,3 +231,25 @@ footer {
         padding: 0 5px 10px 5px;
     }
 }
+
+@media (max-width: 480px) {
+    .catalog {
+        padding: 10px;
+        gap: 15px;
+    }
+    
+    .hall-card {
+        width: 100%;
+        padding: 15px;
+    }
+    
+    nav ul {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    nav ul li a.button {
+        margin: 0;
+        padding: 6px 12px;
+    }
+}

@@ -62,19 +62,44 @@
             <span><span class="booked-color"></span> Занято</span>
         </div>
     </main>
+
     
-    {% include 'footer.html' %}
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const hallId = parseInt(document.querySelector('.week-days').dataset.hallId);
-            let currentDate = new Date();
+            const todayIso = "{{ current_date_iso }}";
             
-            // Устанавливаем начальную дату на понедельник текущей недели
-            const dayOfWeek = currentDate.getDay();
-            const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-            currentDate.setDate(currentDate.getDate() - diff);
+            // СМЕЩЕНИЕ: искусственно перемещаемся на 1 день назад
+            const serverToday = new Date(todayIso);
+            serverToday.setDate(serverToday.getDate() - 1);  // Смещаем дату назад
+            serverToday.setHours(0, 0, 0, 0);
             
-            // Функция форматирования даты
+            // Рассчитываем конечную дату бронирования (serverToday + 13 дней)
+            const endAvailableDate = new Date(serverToday);
+            endAvailableDate.setDate(endAvailableDate.getDate() + 13);
+
+            // Вычисляем понедельник текущей недели
+            let dayOfWeek = serverToday.getDay(); // 0-6 (0 - воскресенье)
+            let diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Коррекция для понедельника
+            let currentWeekStart = new Date(serverToday);
+            currentWeekStart.setDate(serverToday.getDate() - diff);
+            currentWeekStart.setHours(0, 0, 0, 0);
+
+            let activeDate = new Date(serverToday);
+            let startSlot = null;
+            let endSlot = null;
+
+            // Функция для сброса выделения времени
+            function clearSelection() {
+                document.querySelectorAll('.slot').forEach(slot => {
+                    slot.classList.remove('selected', 'start-selected', 'end-selected', 'temp-selected');
+                });
+                startSlot = null;
+                endSlot = null;
+            }
+
+            // Форматирование даты для отображения
             function formatDate(date) {
                 const months = [
                     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -82,152 +107,318 @@
                 ];
                 return `${months[date.getMonth()]} ${date.getFullYear()}`;
             }
-            
-            // Функция получения названия дня недели
+
+            // Получение названия дня недели
             function getDayName(date) {
                 const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
                 return days[date.getDay()];
             }
-            
-            // Функция обновления календаря
-            async function updateCalendar() {
-                const dateStr = currentDate.toISOString().split('T')[0];
+
+            // Обновление календаря (дни недели)
+            function updateCalendar() {
+                const today = serverToday;
                 
-                // Обновление заголовка с датой
-                document.getElementById('current-date').textContent = formatDate(currentDate);
-                
-                // Обновление дней недели
                 const daysContainer = document.querySelector('.week-days');
                 daysContainer.innerHTML = '';
-                
+
+                document.getElementById('current-date').textContent = formatDate(currentWeekStart);
+
                 for (let i = 0; i < 7; i++) {
-                    const dayDate = new Date(currentDate);
-                    dayDate.setDate(currentDate.getDate() + i);
+                    const dayDate = new Date(currentWeekStart);
+                    dayDate.setDate(currentWeekStart.getDate() + i);
+                    dayDate.setHours(0, 0, 0, 0);
                     
                     const dayElement = document.createElement('div');
-                    dayElement.className = 'day' + (i === 0 ? ' active' : '');
+                    dayElement.className = 'day';
                     dayElement.dataset.date = dayDate.toISOString().split('T')[0];
-                    
                     dayElement.innerHTML = `
                         <span>${getDayName(dayDate)}</span>
                         <span>${dayDate.getDate()}</span>
                     `;
                     
+                    if (dayDate.toDateString() === activeDate.toDateString()) {
+                        dayElement.classList.add('active');
+                    }
+                    
+                    // Помечаем недоступные дни (прошлые и дальше 2 недель)
+                    if (dayDate < serverToday || dayDate > endAvailableDate) {
+                        dayElement.classList.add('past-day');
+                    }
+                    
+                    dayElement.addEventListener('click', function() {
+                        if (!this.classList.contains('past-day')) {
+                            setActiveDay(this);
+                        }
+                    });
+                    
                     daysContainer.appendChild(dayElement);
                 }
+            }
+
+            // Установка активного дня
+            function setActiveDay(dayElement) {
+                document.querySelectorAll('.day').forEach(day => {
+                    day.classList.remove('active');
+                });
                 
-                // Получение данных о слотах
+                dayElement.classList.add('active');
+                activeDate = new Date(dayElement.dataset.date);
+                updateTimeSlots();
+            }
+
+            // Обновление слотов времени для активной даты
+            async function updateTimeSlots() {
+                const today = serverToday;
+                const now = new Date();
+                now.setDate(now.getDate() - 1);  // СМЕЩЕНИЕ: корректируем текущее время
+                
+                const dateStr = activeDate.toISOString().split('T')[0];
+                
                 try {
-                    const response = await fetch(`/booking/slots?hall_id=${hallId}&date=${dateStr}`);
-                    const data = await response.json();
+                    const intervalsResponse = await fetch(`/booking/booked_intervals?hall_id=${hallId}&date=${dateStr}`);
+                    const bookedIntervals = await intervalsResponse.json();
                     
-                    // Очистка всех сеток
                     for (let hour = 9; hour <= 16; hour++) {
                         const grid = document.getElementById(`grid-${hour}`);
                         if (grid) grid.innerHTML = '';
                     }
+
+                    clearSelection();
                     
-                    // Заполнение сеток слотами
-                    if (data.available && data.booked) {
-                        for (let hour = 9; hour <= 16; hour++) {
-                            const grid = document.getElementById(`grid-${hour}`);
-                            if (!grid) continue;
+                    const isToday = 
+                        activeDate.getFullYear() === today.getFullYear() &&
+                        activeDate.getMonth() === today.getMonth() &&
+                        activeDate.getDate() === today.getDate();
+                    
+                    for (let hour = 9; hour <= 16; hour++) {
+                        const grid = document.getElementById(`grid-${hour}`);
+                        if (!grid) continue;
+
+                        for (let minute = 0; minute < 60; minute += 15) {
+                            if (hour === 16 && minute > 45) break;
+
+                            const time = `${hour}:${minute.toString().padStart(2, '0')}`;
+                            const timeObj = new Date(0, 0, 0, hour, minute);
                             
-                            for (let minute = 0; minute < 60; minute += 15) {
-                                if (hour === 16 && minute > 45) break;
+                            let isBooked = false;
+                            for (const interval of bookedIntervals) {
+                                const startParts = interval.start.split(':').map(Number);
+                                const endParts = interval.end.split(':').map(Number);
+                                const start = new Date(0, 0, 0, startParts[0], startParts[1]);
+                                const end = new Date(0, 0, 0, endParts[0], endParts[1]);
                                 
-                                const time = `${hour}:${minute === 0 ? '00' : minute}`;
-                                const isAvailable = data.available.includes(time);
-                                const isBooked = data.booked.includes(time);
-                                
-                                const slotElement = document.createElement('div');
-                                slotElement.className = `slot ${isAvailable ? 'available' : ''} ${isBooked ? 'booked' : ''}`;
-                                slotElement.textContent = time;
-                                slotElement.dataset.time = time;
-                                
-                                if (isAvailable) {
-                                    slotElement.addEventListener('click', function() {
-                                        this.classList.toggle('selected');
-                                    });
+                                if (timeObj >= start && timeObj < end) {
+                                    isBooked = true;
+                                    break;
                                 }
-                                
-                                grid.appendChild(slotElement);
                             }
+                            
+                            let isPast = false;
+                            if (activeDate < today) {
+                                isPast = true;
+                            } else if (isToday) {
+                                const slotTime = new Date(activeDate);
+                                slotTime.setHours(hour, minute, 0, 0);
+                                
+                                if (slotTime < now) {
+                                    isPast = true;
+                                }
+                            }
+                            
+                            const slot = document.createElement('div');
+                            slot.className = `slot ${isBooked ? 'booked' : 'available'} ${isPast ? 'past-slot' : ''}`;
+                            slot.textContent = time;
+                            slot.dataset.time = time;
+
+                            if (!isBooked && !isPast) {
+                                slot.addEventListener('click', (e) => {
+                                    if (!startSlot) {
+                                        startSlot = time;
+                                        slot.classList.add('start-selected');
+                                    } else if (!endSlot) {
+                                        endSlot = time;
+                                        highlightRange(startSlot, endSlot);
+                                    } else {
+                                        clearSelection();
+                                        startSlot = time;
+                                        slot.classList.add('start-selected');
+                                    }
+                                });
+                            }
+
+                            grid.appendChild(slot);
                         }
                     }
                 } catch (error) {
-                    console.error('Ошибка при загрузке слотов:', error);
+                    console.error('Ошибка загрузки слотов:', error);
                 }
             }
-            
-            // Обработчики кнопок навигации
-            document.getElementById('prev-week').addEventListener('click', () => {
-                currentDate.setDate(currentDate.getDate() - 7);
-                updateCalendar();
-            });
-            
-            document.getElementById('next-week').addEventListener('click', () => {
-                currentDate.setDate(currentDate.getDate() + 7);
-                updateCalendar();
-            });
-            
-            // Обработка выбора дня недели
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.day')) {
-                    document.querySelectorAll('.day').forEach(day => {
-                        day.classList.remove('active');
+
+            // Подсветка выбранного диапазона времени
+            function highlightRange(start, end) {
+                const slots = Array.from(document.querySelectorAll('.slot.available'));
+                const startIndex = slots.findIndex(s => s.dataset.time === start);
+                const endIndex = slots.findIndex(s => s.dataset.time === end);
+
+                if (startIndex !== -1 && endIndex !== -1) {
+                    const min = Math.min(startIndex, endIndex);
+                    const max = Math.max(startIndex, endIndex);
+
+                    slots.forEach((s, i) => {
+                        s.classList.remove('selected', 'start-selected', 'end-selected', 'temp-selected');
+                        if (i === min) {
+                            s.classList.add('start-selected');
+                        } else if (i === max) {
+                            s.classList.add('end-selected');
+                        } else if (i > min && i < max) {
+                            s.classList.add('selected');
+                        }
                     });
-                    e.target.closest('.day').classList.add('active');
-                    updateCalendar();
                 }
-            });
+            }
+
+            function isRangeContinuous(slots) {
+                for (let i = 0; i < slots.length - 1; i++) {
+                    const [currentHour, currentMin] = slots[i].dataset.time.split(':').map(Number);
+                    const [nextHour, nextMin] = slots[i+1].dataset.time.split(':').map(Number);
+                    
+                    const currentTime = new Date(0, 0, 0, currentHour, currentMin);
+                    const nextTime = new Date(0, 0, 0, nextHour, nextMin);
+                    
+                    // Проверяем, что следующий слот идет сразу после текущего (разница 15 минут)
+                    const diff = (nextTime - currentTime) / (1000 * 60);
+                    if (diff !== 15) {
+                        return false;
+                    }
+                }
+                return true;
+            }
             
-            // Обработка бронирования
-            document.getElementById('book-button').addEventListener('click', async () => {
-                const selectedSlots = Array.from(
-                    document.querySelectorAll('.slot.selected')
-                ).map(slot => slot.dataset.time);
+            // Обработчики кнопок переключения недели
+            document.getElementById('prev-week').addEventListener('click', () => {
+                let newWeekStart = new Date(currentWeekStart);
+                newWeekStart.setDate(newWeekStart.getDate() - 7);
+                newWeekStart.setHours(0, 0, 0, 0);
                 
-                if (selectedSlots.length === 0) {
-                    alert('Выберите хотя бы один слот для бронирования');
+                // Проверяем, не уходит ли неделя в недоступный период
+                let lastDayOfNewWeek = new Date(newWeekStart);
+                lastDayOfNewWeek.setDate(lastDayOfNewWeek.getDate() + 6);
+                
+                if (lastDayOfNewWeek < serverToday) {
+                    return; // Не переключаем если неделя в прошлом
+                }
+                
+                currentWeekStart = newWeekStart;
+                updateCalendar();
+                // Устанавливаем активным первый день недели
+                const firstDay = document.querySelector('.day:not(.past-day)');
+                if (firstDay) setActiveDay(firstDay);
+            });
+
+            document.getElementById('next-week').addEventListener('click', () => {
+                let newWeekStart = new Date(currentWeekStart);
+                newWeekStart.setDate(newWeekStart.getDate() + 7);
+                newWeekStart.setHours(0, 0, 0, 0);
+                
+                // Проверяем, не уходит ли неделя в недоступный период
+                if (newWeekStart > endAvailableDate) {
+                    return; // Не переключаем если неделя выходит за пределы
+                }
+                
+                currentWeekStart = newWeekStart;
+                updateCalendar();
+                // Устанавливаем активным первый день недели
+                const firstDay = document.querySelector('.day:not(.past-day)');
+                if (firstDay) setActiveDay(firstDay);
+            });
+
+            // Обработчик кнопки бронирования
+            document.getElementById('book-button').addEventListener('click', async () => {
+                // Собираем ВСЕ выбранные слоты (включая начальный и конечный)
+                const selectedStart = document.querySelector('.slot.available.start-selected');
+                const selectedEnd = document.querySelector('.slot.available.end-selected');
+                const selectedMiddle = Array.from(document.querySelectorAll('.slot.available.selected'));
+                
+                // Объединяем все выбранные слоты
+                const allSelected = [];
+                if (selectedStart) allSelected.push(selectedStart);
+                if (selectedMiddle.length) allSelected.push(...selectedMiddle);
+                if (selectedEnd) allSelected.push(selectedEnd);
+                
+                // Сортируем слоты по времени
+                allSelected.sort((a, b) => {
+                    const [aHour, aMin] = a.dataset.time.split(':').map(Number);
+                    const [bHour, bMin] = b.dataset.time.split(':').map(Number);
+                    return (aHour * 60 + aMin) - (bHour * 60 + bMin);
+                });
+
+                if (allSelected.length === 0) {
+                    alert('Выберите временной диапазон');
                     return;
                 }
                 
                 const activeDay = document.querySelector('.day.active');
                 if (!activeDay) {
-                    alert('Выберите день для бронирования');
+                    alert('Выберите день');
                     return;
                 }
                 
-                const activeDate = activeDay.dataset.date;
+                // Проверка минимального времени (минимум 2 слота = 30 минут)
+                if (allSelected.length < 2) {
+                    alert('Минимальное время бронирования - 30 минут');
+                    return;
+                }
                 
+                // Проверка максимального времени (максимум 12 слотов = 3 часа)
+                if (allSelected.length > 12) {
+                    alert('Максимальное время бронирования - 3 часа');
+                    return;
+                }
+                
+                // Проверка непрерывности диапазона
+                if (!isRangeContinuous(allSelected)) {
+                    alert('Выбранный диапазон содержит забронированные слоты или прерывается');
+                    return;
+                }
+                
+                // Берем первый и последний слот из отсортированного списка
+                const startTime = allSelected[0].dataset.time;
+                const lastSlot = allSelected[allSelected.length - 1].dataset.time;
+                const [lastHour, lastMinute] = lastSlot.split(':').map(Number);
+                const lastSlotTime = new Date(0, 0, 0, lastHour, lastMinute);
+                lastSlotTime.setMinutes(lastSlotTime.getMinutes() + 15);
+                const endTime = `${lastSlotTime.getHours().toString().padStart(2, '0')}:${lastSlotTime.getMinutes().toString().padStart(2, '0')}`;
+
                 try {
                     const response = await fetch('/booking/create', {
                         method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            
                             hall_id: hallId,
-                            date: activeDate,
-                            slots: selectedSlots
+                            date: activeDay.dataset.date,
+                            start_time: startTime,
+                            end_time: endTime
                         })
                     });
-                    
+
                     const result = await response.json();
                     if (result.success) {
-                        alert('Бронирование успешно создано!');
-                        window.location.href = '/dashboard';
+                        alert('Бронь создана!');
+                        window.location.href = '/';
                     } else {
                         alert('Ошибка: ' + result.message);
                     }
                 } catch (error) {
-                    console.error('Ошибка при бронировании:', error);
-                    alert('Произошла ошибка при бронировании');
+                    console.error('Ошибка бронирования:', error);
+                    alert('Произошла ошибка');
                 }
             });
-            
-            // Инициализация календаря
+
+            // Инициализация
             updateCalendar();
+            // Устанавливаем активным первый доступный день недели
+            const firstAvailableDay = document.querySelector('.day:not(.past-day)');
+            if (firstAvailableDay) setActiveDay(firstAvailableDay);
         });
     </script>
 </body>

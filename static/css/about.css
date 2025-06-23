@@ -229,3 +229,16 @@ footer {
     font-size: 12px;
     color: #666;
 }
+
+/* Добавьте в about.css */
+@media (max-width: 768px) {
+    .team-member {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .member-photo {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+}

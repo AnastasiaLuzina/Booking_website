@@ -69,13 +69,7 @@
                         </div>
                     </div>
                     
-                    {% if errors %}
-                        <div class="error-message">
-                            {% for error in errors %}
-                                <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    {% include 'flash_message.html' %}
                     
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" id="changePasswordBtn">
@@ -151,76 +145,6 @@
         }
     }
     
-    // // Валидация пароля в реальном времени
-    // const newPassword = document.getElementById("newPassword");
-    
-    // const authCheck = await fetch('/edit_password', {credentials: 'include'});
-
-    // newPassword.addEventListener('input', function() {
-    //     const strength = checkPasswordStrength(this.value);
-    //     strengthIndicator.textContent = strength.message;
-    //     strengthIndicator.className = "password-strength " + strength.class;
-    // });
-    
-    // confirmPassword.addEventListener('input', function() {
-    //     if (this.value !== newPassword.value) {
-    //         matchIndicator.textContent = "Пароли не совпадают!";
-    //         matchIndicator.style.color = "#e74c3c";
-    //     } else {
-    //         matchIndicator.textContent = "Пароли совпадают";
-    //         matchIndicator.style.color = "#2ecc71";
-    //     }
-    // });
-    
-    // // Функция проверки сложности пароля
-    // function checkPasswordStrength(password) {
-    //     // Проверяем длину
-    //     if (password.length === 0) return {message: "", class: ""};
-    //     if (password.length < 6) return {message: "Слишком короткий", class: "weak"};
-        
-    //     // Проверяем сложность
-    //     const hasLetters = /[a-zA-Zа-яА-Я]/.test(password);
-    //     const hasNumbers = /\d/.test(password);
-    //     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        
-    //     if (hasLetters && hasNumbers && hasSpecial && password.length >= 10) {
-    //         return {message: "Сильный пароль", class: "strong"};
-    //     } else if ((hasLetters && hasNumbers) || (hasLetters && hasSpecial) || (hasNumbers && hasSpecial)) {
-    //         return {message: "Средний пароль", class: "medium"};
-    //     } else {
-    //         return {message: "Слабый пароль", class: "weak"};
-    //     }
-    // }
-    
-    // // Обработка отправки формы
-    // form.addEventListener('submit', function(e) {
-    //     e.preventDefault();
-        
-    //     // Проверка совпадения паролей
-    //     if (newPassword.value !== confirmPassword.value) {
-    //         alert("Пароли не совпадают!");
-    //         return;
-    //     }
-        
-    //     // Проверка сложности (опционально)
-    //     const strength = checkPasswordStrength(newPassword.value);
-    //     if (strength.class === "weak") {
-    //         if (!confirm("Ваш пароль слабый. Вы уверены, что хотите использовать его?")) {
-    //             return;
-    //         }
-    //     }
-        
-    //     // Здесь должна быть AJAX-отправка на сервер
-    //     alert("Пароль успешно изменён!"); // Временное уведомление
-        
-    //     // Закрываем модальное окно
-    //     modal.style.display = "none";
-        
-    //     // Очищаем форму
-    //     form.reset();
-    //     strengthIndicator.textContent = "";
-    //     matchIndicator.textContent = "";
-    // });
 </script>
 
 </body>
