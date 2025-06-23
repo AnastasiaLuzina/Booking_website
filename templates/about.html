@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Мета-теги и стили -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторизация</title>
+    <title>О нас</title>
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
 </head>
 <body>
@@ -20,7 +22,7 @@
                 <!-- Первый участник -->
                 <div class="team-member">
                     <img src="{{ url_for('static', filename='photo/Аня.png') }}"
-                        alt="Валитова Анна" class="member-photo">
+                        alt="Валитова Анна" class="member-photo" loading="lazy">
                     <div class="member-info">
                         <h3 class="member-name">Валитова Анна</h3>
                         <p class="member-position">Бэкенд-разработчик</p>
@@ -33,7 +35,7 @@
                 <!-- Второй участник -->
                 <div class="team-member">
                     <img src="{{ url_for('static', filename='photo/Настя.png') }}" 
-                        alt="Лузина Анастасия" class="member-photo">
+                        alt="Лузина Анастасия" class="member-photo" loading="lazy">
                     <div class="member-info">
                         <h3 class="member-name">Лузина Анастасия</h3>
                         <p class="member-position">Бэкенд-разработчик</p>
@@ -45,7 +47,7 @@
                 <!-- Третий участник -->
                 <div class="team-member">
                     <img src="{{ url_for('static', filename='photo/Соня.png') }}" 
-                        alt="Салюк София" class="member-photo">
+                        alt="Салюк София" class="member-photo" loading="lazy">
                     <div class="member-info">
                         <h3 class="member-name">Салюк София</h3>
                         <p class="member-position">Фронтенд-разработчик</p>
@@ -57,7 +59,7 @@
                 <!-- Четвертый участник -->
                 <div class="team-member">
                     <img src="{{ url_for('static', filename='photo/Лада.png') }}" 
-                        alt="Малышева Лада" class="member-photo">
+                        alt="Малышева Лада" class="member-photo" loading="lazy">
                     <div class="member-info">
                         <h3 class="member-name">Малышева Лада</h3>
                         <p class="member-position">Фронтенд-разработчик</p>
@@ -72,5 +74,7 @@
     </main>
 
     {% include 'footer.html' %}
+
 </body>
+
 </html>

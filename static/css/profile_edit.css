@@ -1,4 +1,80 @@
 /* Шапка */
+/* Шапка (базовые стили) */
+.desktop-menu {
+    display: block; /* Показываем на ПК */
+}
+
+/* Кнопка бургера */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    color: #007bff;
+    font-size: 29px;
+}
+.mobile-menu-btn.open {
+    transform: rotate(90deg);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Блокировка прокрутки */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Мобильное меню */
+.mobile-menu-container {
+    position: fixed;
+    top: 70px; /* Высота шапки */
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    z-index: 1000;
+    transition: max-height 0.3s ease;
+}
+
+.mobile-menu-container.active {
+    max-height: 80vh; /* 80% высоты экрана */
+    overflow-y: auto;
+}
+
+/* Кнопка бургера */
+#burgerButton {
+    display: none; /* По умолчанию скрыта */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
 .logo {
     font-size: 20px;
     font-weight: bold;
@@ -344,5 +420,164 @@ footer {
     color: #666;
 }
 
+/* Адаптация для мобилок (только изменения!) */
+@media (max-width: 768px) {
+    #burgerButton {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none;
+    }
+    /* Шапка */
+    nav ul {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    header {
+        padding: 10px;
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+    
+    
+    
+    /* Основной контент */
+    body {
+        padding: 10px;
+    }
 
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .profile-edit-card {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-columns {
+        flex-direction: column;
+    }
+
+    .form-column {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #1e6bdc;
+        color: white;
+    }
+
+    /* Опционально: стили для флеш-сообщений */
+    .flash-message,
+    .error-message {
+        font-size: 0.9rem;
+        padding: 10px;
+        text-align: center;
+    }
+
+    /* Модальное окно */
+    .modal-content {
+        width: 90%;
+        max-width: 90%;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .password-form .form-group {
+        margin-bottom: 15px;
+    }
+
+    .password-form .form-actions {
+        margin-top: 20px;
+    }
+
+    /* Подвал */
+    footer {
+        padding: 10px;
+        margin-top: 15px;
+    }
+    
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+}
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .member-info {
+        padding: 10px;
+    }
+    .member-name {
+        font-size: 1.2em;
+    }
+    .member-bio {
+        font-size: 0.8em;
+    }
+}
 

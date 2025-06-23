@@ -1,4 +1,4 @@
-/* Общие стили */
+/* Общие стили (работают всегда) */
 * {
     margin: 0;
     padding: 0;
@@ -7,13 +7,89 @@
 }
 
 body {
-    background-color: #e6f7ff; /* Градиентный фон */
+    background-color: #e6f7ff;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-/* Шапка */
+/* Шапка (базовые стили) */
+.desktop-menu {
+    display: block; /* Показываем на ПК */
+}
+
+/* Кнопка бургера */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    color: #007bff;
+    font-size: 29px;
+}
+.mobile-menu-btn.open {
+    transform: rotate(90deg);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Блокировка прокрутки */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Мобильное меню */
+.mobile-menu-container {
+    position: fixed;
+    top: 70px; /* Высота шапки */
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    z-index: 1000;
+    transition: max-height 0.3s ease;
+}
+
+.mobile-menu-container.active {
+    max-height: 80vh; /* 80% высоты экрана */
+    overflow-y: auto;
+}
+
+/* Кнопка бургера */
+#burgerButton {
+    display: none; /* По умолчанию скрыта */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
+
 .logo {
     font-size: 20px;
     font-weight: bold;
@@ -25,137 +101,72 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    z-index: 100;
 }
 nav ul {
     list-style: none;
     display: flex;
     gap: 24px;
 }
-
 nav ul li a {
     text-decoration: none;
     color: #333;
     font-size: 16px;
 }
-
 nav ul a:hover {
     color: #0056b3;
 }
-
 nav ul li a.button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 8px 16px;  /* Чуть меньше padding для навигации */
-    margin-left: 15px;   /* Отступ от других пунктов меню */
+    padding: 8px 16px;
+    margin-left: 15px;
     margin-top: -15px;
     border-radius: 20px;
     font-weight: bold;
     cursor: pointer;
-    text-decoration: none;  /* Убираем подчеркивание */
+    text-decoration: none;
     display: inline-block;
-    transition: background-color 0.3s ease; /* Плавное изменение цвета */
+    transition: background-color 0.3s ease;
 }
-
-/* Эффект при наведении */
 nav ul li a.button:hover {
     background-color: #0056b3;
-    text-decoration: none;
 }
-
-/* Эффект при нажатии */
 nav ul li a.button:active {
     background-color: #003d7a;
     transform: translateY(1px);
 }
-
-/* Подчеркивание активной ссылки в меню */
 nav ul li a.active {
-    color: #333; /* Цвет текста */ /* Цвет подчеркивания */
+    color: #333;
     text-decoration: underline; 
     text-decoration-color: #007bff;
     text-decoration-thickness: 3px;
 }
 
-nav ul a:hover {
-    color: #0056b3;
-}
-
-/* Основное содержимое */
+/* Основное содержимое (базовые стили) */
 main {
     flex-grow: 1;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .login-container {
-    background-color: #ffffffdd; /* белый с прозрачностью */
+    background-color: #ffffffdd;
     border-radius: 15px;
     box-shadow: 0 8px 24px rgba(0, 123, 255, 0.2);
     padding: 40px 50px;
-    
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 25px;
     text-align: left;
 }
-
 .login-container h2 {
     text-align: center;
     margin-bottom: 20px;
 }
-
-.login-container form {
-    display: flex;
-    flex-direction: column;
-}
-
-.login-container label {
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.login-container input {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.login-container button {
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.login-container button:hover {
-    background-color: #0056b3;
-}
-
-.error-message {
-    color: red;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-.register-link {
-    margin-top: 10px;
-    font-size: 14px;
-    text-align: center;
-}
-
-.register-link a {
-    color: #007bff;
-    text-decoration: none;
-}
-
 .team-section {
     display: flex;
     flex-wrap: wrap;
@@ -163,7 +174,6 @@ main {
     gap: 40px;
     margin-bottom: 50px;
 }
-
 .team-member {
     background: rgb(232, 232, 232);
     border-radius: 10px;
@@ -172,73 +182,118 @@ main {
     width: 270px;
     transition: transform 0.3s ease;
 }
-
 .member-photo {
     width: 100%;
     height: 300px;
     object-fit: cover;
 }
-
 .member-info {
     padding: 20px;
     text-align: center;
 }
-
 .member-name {
     font-size: 1.5em;
     margin-bottom: 10px;
     color: #2c3e50;
 }
-
 .member-position {
     color: #007bff;
     font-weight: bold;
     margin-bottom: 15px;
 }
-
 .member-bio {
     color: #7f8c8d;
     font-size: 0.95em;
 }
-
 h1 {
     padding-top: 30px;
     align-self: center;
 }
 
-/* Подвал */
+/* Подвал (базовые стили) */
 footer {
-    
     background-color: #fff;
     padding: 20px;
-    
     left: 0;
     bottom: 0;
     width: 100%;
     height: 80px;
-    
 }
-
 .contacts {
     text-align: left;
     margin-bottom: 10px;
 }
-
 .copyright {
     text-align: left;
     font-size: 12px;
     color: #666;
 }
 
-/* Добавьте в about.css */
+/* Адаптация для мобилок (только изменения!) */
 @media (max-width: 768px) {
-    .team-member {
-        flex-direction: column;
-        text-align: center;
+    #burgerButton {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none;
+    }
+
+    /* Шапка */
+    nav ul {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    header {
+        padding: 10px;
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
     }
     
+    
+    
+    /* Основной контент */
+    .login-container {
+        padding: 20px;
+        width: 90%;
+    }
+    .team-section {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .team-member {
+        width: 100%;
+    }
     .member-photo {
-        margin-right: 0;
-        margin-bottom: 15px;
+        height: 250px;
+    }
+
+    /* Подвал */
+    footer {
+        padding: 10px;
+        margin-top: 15px;
+    }
+    
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+}
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .member-info {
+        padding: 10px;
+    }
+    .member-name {
+        font-size: 1.2em;
+    }
+    .member-bio {
+        font-size: 0.8em;
     }
 }

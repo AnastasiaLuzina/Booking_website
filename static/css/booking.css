@@ -298,6 +298,82 @@ h2 {
 
 
 /* Шапка */
+/* Шапка (базовые стили) */
+.desktop-menu {
+    display: block; /* Показываем на ПК */
+}
+
+/* Кнопка бургера */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    color: #007bff;
+    font-size: 29px;
+}
+.mobile-menu-btn.open {
+    transform: rotate(90deg);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Блокировка прокрутки */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Мобильное меню */
+.mobile-menu-container {
+    position: fixed;
+    top: 70px; /* Высота шапки */
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    z-index: 1000;
+    transition: max-height 0.3s ease;
+}
+
+.mobile-menu-container.active {
+    max-height: 80vh; /* 80% высоты экрана */
+    overflow-y: auto;
+}
+
+/* Кнопка бургера */
+#burgerButton {
+    display: none; /* По умолчанию скрыта */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
 .logo {
     font-size: 20px;
     font-weight: bold;
@@ -401,37 +477,175 @@ nav ul a:hover {
     }
 }
 
-@media (max-width: 480px) {
+/* Адаптация для мобилок (только изменения!) */
+@media (max-width: 768px) {
+    #burgerButton {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none;
+    }
+    /* Шапка */
+    nav ul {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    header {
+        padding: 10px;
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+    
+    
+    
+    /* Основной контент */
+    body {
+        padding: 10px;
+    }
+
     .booking-container {
         padding: 15px;
+        max-width: 100%;
+        margin: auto;
     }
-    
+
+    h2 {
+        font-size: 1.3rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Навигация по неделям */
     .date-navigation {
         flex-direction: column;
+        align-items: center;
         gap: 10px;
-        padding: 0;
     }
-    
+
     .date-navigation button {
         width: 100%;
+        text-align: center;
     }
-    
+
+    #current-date {
+        font-size: 1.1rem;
+    }
+
+    /* Дни недели */
     .week-days {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
     }
-    
-    .availability-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .slot {
+
+    .day-button {
+        flex: 1 1 45%; /* По 2 дня в строке */
+        max-width: 45%;
+        font-size: 0.9rem;
         padding: 10px 5px;
-        font-size: 12px;
-        min-height: 40px;
     }
-    
+
+    /* Расписание времени */
+    .schedule {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .time-marker {
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    .availability-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+    }
+
+    .slot {
+        height: 30px;
+        font-size: 0.8rem;
+        line-height: 1.2;
+    }
+
+    /* Кнопка бронирования */
+    .book-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        background-color: #1e6bdc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .book-button:hover {
+        background-color: #165bb8;
+    }
+
+    /* Легенда доступности */
     .legend {
+        display: flex;
         flex-direction: column;
         gap: 10px;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .legend span {
+        display: inline-block;
+        margin: 5px 0;
+    }
+
+    .available-color,
+    .booked-color {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+
+    .available-color {
+        background-color: #d4f4dd;
+    }
+
+    .booked-color {
+        background-color: #f8d7da;
+    }
+
+    /* Подвал */
+    footer {
+        padding: 10px;
+        margin-top: 15px;
+    }
+    
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+}
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .member-info {
+        padding: 10px;
+    }
+    .member-name {
+        font-size: 1.2em;
+    }
+    .member-bio {
+        font-size: 0.8em;
     }
 }

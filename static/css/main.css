@@ -18,6 +18,83 @@ body {
 }
 
 /* Шапка */
+/* Шапка (базовые стили) */
+.desktop-menu {
+    display: block; /* Показываем на ПК */
+}
+
+/* Кнопка бургера */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    color: #007bff;
+    font-size: 29px;
+}
+.mobile-menu-btn.open {
+    transform: rotate(90deg);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Блокировка прокрутки */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Мобильное меню */
+.mobile-menu-container {
+    position: fixed;
+    top: 70px; /* Высота шапки */
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    z-index: 1000;
+    transition: max-height 0.3s ease;
+}
+
+.mobile-menu-container.active {
+    max-height: 80vh; /* 80% высоты экрана */
+    overflow-y: auto;
+}
+
+/* Кнопка бургера */
+#burgerButton {
+    display: none; /* По умолчанию скрыта */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
+
 .logo {
     font-size: 20px;
     font-weight: bold;
@@ -346,41 +423,160 @@ footer {
     color: #666;
 }
 
+/* Адаптация для мобилок (только изменения!) */
+/* Адаптация для мобилок */
 @media (max-width: 768px) {
+    #burgerButton {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none;
+    }
+    /* Шапка сайта */
+    header {
+        padding: 10px;
+    }
+
+    .desktop-menu {
+        display: none; /* Скрываем десктопное меню */
+    }
+
+    .mobile-menu-btn {
+        display: block; /* Показываем кнопку меню для мобильных */
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    /* Главная секция с изображением */
+    .hero-section {
+        padding: 20px 10px;
+    }
+
     .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text {
+        margin-bottom: 20px;
+    }
+
+    .hero-image {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Блок преимуществ */
+    .benefits-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .benefit-card {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .benefit-icon {
+        font-size: 2rem;
+    }
+
+    /* Топ площадок месяца */
+    .top-spaces-simple .container {
+        padding: 0 10px;
+    }
+
+    .top-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .top-item {
+        width: 100%;
+    }
+
+    .space-card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .space-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .space-image img,
+    .no-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .place-number {
+        font-size: 1.2rem;
+        margin-right: 10px;
+    }
+
+    /* Форма входа / регистрации */
+    .login-container {
+        width: 90%;
+        padding: 20px;
+        margin: 0 auto;
+    }
+
+    /* Раздел команды (team-section) */
+    .team-section {
         flex-direction: column;
         gap: 20px;
     }
-    
-    .hero-image {
+
+    .team-member {
         width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
+    }
+
+    .member-photo {
+        height: 250px;
+    }
+
+    /* Контент внутри контейнера */
+    .container {
+        padding: 10px;
+    }
+
+
+    /* Подвал */
+    footer {
+        padding: 10px;
+        margin-top: 15px;
     }
     
-    .benefits-grid {
-        flex-direction: column;
-        align-items: center;
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block; /* Показываем на мобильных */
     }
-    
-    .benefit-card {
-        width: 100%;
-        max-width: 300px;
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
     }
-    
-    .top-list {
-        flex-direction: column;
-        align-items: center;
+}
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .member-info {
+        padding: 10px;
     }
-    
-    .top-item {
-        width: 100%;
-        max-width: 350px;
-        margin-bottom: 20px;
+    .member-name {
+        font-size: 1.2em;
     }
-    
-    nav ul {
-        flex-wrap: wrap;
-        gap: 10px;
+    .member-bio {
+        font-size: 0.8em;
     }
 }
