@@ -1,10 +1,29 @@
-<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Сворачивание/разворачивание бронирований
+            const bookingsHeader = document.querySelector('.last-bookings h3');
+            if (bookingsHeader) {
+                bookingsHeader.addEventListener('click', function() {
+                    const bookingsContent = document.querySelector('.bookings-content');
+                    const arrowIcon = this.querySelector('svg');
+                    
+                    if (bookingsContent.style.display === 'none') {
+                        bookingsContent.style.display = 'block';
+                        arrowIcon.style.transform = 'rotate(0deg)';
+                    } else {
+                        bookingsContent.style.display = 'none';
+                        arrowIcon.style.transform = 'rotate(-90deg)';
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
    
@@ -58,13 +77,66 @@
 
                 <!-- Последние бронирования -->
                 <div class="last-bookings">
-                    <h3>Последние бронирования <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg></h3>
+                    <h3>Последние бронирования 
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5H7z"/>
+                        </svg>
+                    </h3>
+                    
+                    <div class="bookings-content">
+                        <!-- Активные бронирования (status_for_admin=1) -->
+                        <div class="active-bookings">
+                            <h4>Активные</h4>
+                            {% if active_bookings %}
+                            <div class="bookings-list">
+                                {% for booking in active_bookings %}
+                                <div class="booking-item active">
+                                    <div class="booking-info">
+                                        <div class="hall-name">{{ booking[1] }}</div>
+                                        <div class="booking-date">{{ booking[2] }}</div>
+                                        <div class="booking-time">{{ booking[3] }} - {{ booking[4] }}</div>
+                                    </div>
+                                    <form action="{{ url_for('profile.delete_booking', booking_id=booking[0]) }}" method="POST">
+                                        <button type="submit" class="cancel-booking">Отменить</button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p>Нет активных бронирований</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Неактивные бронирования (status_for_admin=0) -->
+                        <div class="past-bookings">
+                            <h4>Завершенные/отмененные</h4>
+                            {% if past_bookings %}
+                            <div class="bookings-list">
+                                {% for booking in past_bookings %}
+                                <div class="booking-item past">
+                                    <div class="booking-info">
+                                        <div class="hall-name">{{ booking[1] }}</div>
+                                        <div class="booking-date">{{ booking[2] }}</div>
+                                        <div class="booking-time">{{ booking[3] }} - {{ booking[4] }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p>Нет завершенных бронирований</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Действия -->
                 <div class="actions">
-                    <button onclick="window.location.href='{{ url_for('user.logout') }}'" >Выйти из аккаунта</button>
-                    <button onclick="window.location.href='{{ url_for('profile.profile_edit_page') }}'">Изменить данные</button>
+                    <button class="action-button logout" onclick="window.location.href='{{ url_for('user.logout') }}'">
+                        Выйти из аккаунта
+                    </button>
+                    <button class="action-button edit-profile" onclick="window.location.href='{{ url_for('profile.profile_edit_page') }}'">
+                        Изменить данные
+                    </button>
                 </div>
             </div>
         </div>

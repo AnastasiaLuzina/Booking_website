@@ -2,6 +2,7 @@ from flask import Blueprint, Response, send_file, render_template
 from tools.tools_for_base import connect_to_base, close_base
 import os
 import sqlite3  # Добавьте эту строку
+from flask import flash  
 
 photo_bp = Blueprint('photo', __name__)
 

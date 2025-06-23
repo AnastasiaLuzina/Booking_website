@@ -2,6 +2,7 @@ from flask import Flask, session, request, render_template, redirect, url_for, f
 
 import sqlite3
 import re
+from flask import flash  
 
 from tools.tools_for_base import connect_to_base, close_base, commit_in_base
 import hashlib
@@ -12,6 +13,33 @@ from flask import Blueprint
 user_bp = Blueprint('user', __name__) 
 
 class Checkers:
+    
+    @staticmethod
+    def get_all_users():
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("SELECT * FROM User")
+            return cursor.fetchall()
+        except Exception as e:
+            print(f"Error getting users: {str(e)}")
+            return []
+        finally:
+            close_base(conn)
+    
+    @staticmethod
+    def delete_user(user_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("DELETE FROM User WHERE user_id = ?", (user_id,))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error deleting user: {str(e)}")
+            return False
+        finally:
+            close_base(conn)
+    
+    
     
     @staticmethod
     def take_info(user_id):
@@ -345,3 +373,14 @@ def authorization_verification():
 def logout():
     session.pop("user", None)
     return redirect(url_for('user.authorization'))
+
+@user_bp.route("/delete_user", methods=["POST"])
+def delete_user():
+    user_id = request.form.get("user_id")
+    
+    if Checkers.delete_user(user_id):
+        flash("Пользователь успешно удален", "success")
+    else:
+        flash("Ошибка при удалении пользователя", "danger")
+    
+    return redirect(url_for('main.admin_page'))

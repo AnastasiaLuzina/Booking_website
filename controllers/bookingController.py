@@ -15,6 +15,39 @@ booking_bp = Blueprint('booking', __name__)
 time_slots_cache = defaultdict(lambda: defaultdict(dict))
 
 class BookingActions:
+    
+    @staticmethod
+    def get_all_bookings():
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("""
+                SELECT b.booking_id, h.title, u.login, b.date, b.start_time, b.end_time, b.status_for_admin
+                FROM Booking b
+                JOIN Hall h ON b.hall_id = h.hall_id
+                JOIN User u ON b.user_id = u.user_id
+            """)
+            return cursor.fetchall()
+        except Exception as e:
+            print(f"Error getting bookings: {str(e)}")
+            return []
+        finally:
+            close_base(conn)
+    
+    @staticmethod
+    def delete_booking(booking_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("DELETE FROM Booking WHERE booking_id = ?", (booking_id,))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error deleting booking: {str(e)}")
+            return False
+        finally:
+            close_base(conn)   
+    
+    
+    
 
     @staticmethod
     def get_booked_intervals(hall_id, date):
@@ -427,3 +460,12 @@ def get_booked_intervals():
         return jsonify(formatted_intervals)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@booking_bp.route("/booking/delete_admin", methods=["POST"])
+def delete_booking_admin():
+    booking_id = request.form.get("booking_id")
+    if BookingActions.delete_booking(booking_id):
+        flash("Бронирование успешно удалено", "success")
+    else:
+        flash("Ошибка при удалении бронирования", "danger")
+    return redirect(url_for('main.admin_page'))

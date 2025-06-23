@@ -193,6 +193,7 @@ class Halls_actions:
         except Exception as e:
             print(f"Error getting top halls by bookings: {str(e)}")
             return []
+        
         finally:
             if 'cursor' in locals(): cursor.close()
             if 'conn' in locals(): close_base(conn)
@@ -229,29 +230,88 @@ class Halls_actions:
             if 'cursor' in locals(): cursor.close()
             if 'conn' in locals(): close_base(conn)
 
+    @staticmethod
+    def add_hall_with_photos(title, address, description, photos):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "INSERT INTO Hall (title, address, description) VALUES (?, ?, ?)",
+                (title, address, description))
+            hall_id = cursor.lastrowid
+            
+            # Сохраняем фотографии
+            for photo in photos:
+                if photo.filename != '':
+                    photo_bytes = photo.read()
+                    mime_type = photo.mimetype
+                    cursor.execute(
+                        "INSERT INTO Photo (hall_id, photo_bytes, mime_type) VALUES (?, ?, ?)",
+                        (hall_id, photo_bytes, mime_type))
+            
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error adding hall: {str(e)}")
+            return False
+        finally:
+            close_base(conn)
+    
+    @staticmethod
+    def update_hall(hall_id, title, address, description, new_photos):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "UPDATE Hall SET title = ?, address = ?, description = ? WHERE hall_id = ?",
+                (title, address, description, hall_id))
+            
+            # Добавляем новые фото
+            for photo in new_photos:
+                if photo.filename != '':
+                    photo_bytes = photo.read()
+                    mime_type = photo.mimetype
+                    cursor.execute(
+                        "INSERT INTO Photo (hall_id, photo_bytes, mime_type) VALUES (?, ?, ?)",
+                        (hall_id, photo_bytes, mime_type))
+            
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error updating hall: {str(e)}")
+            return False
+        finally:
+            close_base(conn)
 
 
 
-@hall_bp.route("/hall_add", methods=["GET"])
-def add_form():
-    return render_template("add_hall.html")
 
-
-@hall_bp.route("/hall_update", methods=["POST"])
-def add():
+@hall_bp.route("/hall_add", methods=["POST"])
+def add_hall():
     title = request.form.get("title")
     address = request.form.get("address")
     description = request.form.get("description")
-    errors = []
+    photos = request.files.getlist("photos")
     
-    if not title or not address:
-        errors.append("Название и адрес обязательны")
+    if Halls_actions.add_hall_with_photos(title, address, description, photos):
+        flash("Зал успешно добавлен", "success")
     else:
-        Halls_actions.add_hall(title, address, description, errors)
+        flash("Ошибка при добавлении зала", "danger")
     
-    if not errors:
-        return redirect(url_for('main.admin_page'))
-    return render_template("add_hall.html", errors=errors, title=title, address=address, description=description)
+    return redirect(url_for('main.admin_page'))
+
+@hall_bp.route("/hall_update", methods=["POST"])
+def update_hall():
+    hall_id = request.form.get("hall_id")
+    title = request.form.get("title")
+    address = request.form.get("address")
+    description = request.form.get("description")
+    new_photos = request.files.getlist("new_photos")
+    
+    if Halls_actions.update_hall(hall_id, title, address, description, new_photos):
+        flash("Зал успешно обновлен", "success")
+    else:
+        flash("Ошибка при обновлении зала", "danger")
+    
+    return redirect(url_for('main.admin_page'))
 
 
 @hall_bp.route("/delete_hall", methods=["POST"])

@@ -30,6 +30,65 @@ class EquipmentActions:
             return equipment_list
         except:
             return []
+        
+    @staticmethod
+    def get_all_equipment_with_halls():
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("""
+                SELECT e.equipment_id, e.name, e.count, e.description, h.title, h.hall_id
+                FROM Equipment e
+                JOIN Hall h ON e.hall_id = h.hall_id
+            """)
+            return cursor.fetchall()
+        except Exception as e:
+            print(f"Error getting equipment: {str(e)}")
+            return []
+        finally:
+            close_base(conn)
+    
+    @staticmethod
+    def add_equipment(hall_id, name, count, description):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "INSERT INTO Equipment (hall_id, name, count, description) VALUES (?, ?, ?, ?)",
+                (hall_id, name, count, description))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error adding equipment: {str(e)}")
+            return False
+        finally:
+            close_base(conn)
+    
+    @staticmethod
+    def update_equipment(equipment_id, name, count, description, hall_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute(
+                "UPDATE Equipment SET name = ?, count = ?, description = ?, hall_id = ? WHERE equipment_id = ?",
+                (name, count, description, hall_id, equipment_id))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error updating equipment: {str(e)}")
+            return False
+        finally:
+            close_base(conn)
+    
+    @staticmethod
+    def delete_equipment(equipment_id):
+        try:
+            conn, cursor = connect_to_base()
+            cursor.execute("DELETE FROM Equipment WHERE equipment_id = ?", (equipment_id,))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error deleting equipment: {str(e)}")
+            return False
+        finally:
+            close_base(conn)
 
 
 
@@ -49,51 +108,36 @@ def view_equipment():
 
 
 # Роут для формы добавления оборудования
-@equipment_bp.route("/equipment_add", methods=["GET"])
-def add_form():
-    hall_id = request.args.get("hall_id")
-    return render_template("add_equipment.html", hall_id=hall_id)
-
-
-# Роут для добавления оборудования
 @equipment_bp.route("/equipment_add", methods=["POST"])
-def add():
+def add_equipment():
     hall_id = request.form.get("hall_id")
     name = request.form.get("name")
     count = request.form.get("count")
     description = request.form.get("description")
-    errors = []
     
-    if not name or not count:
-        errors.append("Название и количество обязательны")
+    if EquipmentActions.add_equipment(hall_id, name, count, description):
+        flash("Оборудование успешно добавлено", "success")
     else:
-        EquipmentActions.add_equipment(hall_id, name, count, description, errors)
+        flash("Ошибка при добавлении оборудования", "danger")
     
-    if not errors:
-        return redirect(url_for('equipment.view_equipment', hall_id=hall_id))
-    return render_template("add_equipment.html", 
-                          errors=errors, 
-                          hall_id=hall_id,
-                          name=name,
-                          count=count,
-                          description=description)
+    return redirect(url_for('main.admin_page'))
+
+
+
 
 
 # Роут для удаления оборудования
-@equipment_bp.route("/delete_equipment", methods=["POST"])
-def delete():
+
+@equipment_bp.route("/equipment_delete", methods=["POST"])
+def delete_equipment():
     equipment_id = request.form.get("equipment_id")
-    hall_id = request.form.get("hall_id")
-    errors = []
-    EquipmentActions.delete_equipment(errors, equipment_id)
     
-    if not errors:
-        return redirect(url_for('equipment.view_equipment', hall_id=hall_id))
+    if EquipmentActions.delete_equipment(equipment_id):
+        flash("Оборудование успешно удалено", "success")
+    else:
+        flash("Ошибка при удалении оборудования", "danger")
     
-    return render_template("hall_equipment.html", 
-                         errors=errors, 
-                         hall_id=hall_id,
-                         equipment_list=EquipmentActions.get_all_equipment_for_hall(hall_id))
+    return redirect(url_for('main.admin_page'))
 
 
 # Роут для формы редактирования оборудования

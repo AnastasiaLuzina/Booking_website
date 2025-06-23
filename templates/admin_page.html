@@ -1,77 +1,140 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Административная панель</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header>
+            <h1><i class="fas fa-cogs"></i> Административная панель</h1>
+            <div class="user-info">
+                <span>{{ user.login }}</span>
+                <a href="{{ url_for('user.logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </a>
+            </div>
+        </header>
 
-{% block content %}
-<h1>Панель администратора</h1>
-<p>Добро пожаловать, {{ user.login }}!</p>
+        <div class="admin-content">
+            <!-- Вкладка управления залами -->
+            <div id="halls" class="tab-content active">
+                <div class="tab-header">
+                    <h2><i class="fas fa-building"></i> Управление залами</h2>
+                </div>
 
-{% if errors %}
-    <div class="alert alert-danger">
-        <ul>
-            {% for error in errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
+                <!-- Список залов -->
+                <div class="card-container">
+                    {% for hall in halls %}
+                    <div class="hall-card">
+                        <div class="hall-image">
+                            {% if hall_photos.get(hall[0]) %}
+                                <img src="data:image/jpeg;base64,{{ hall_photos[hall[0]] }}" alt="{{ hall[1] }}">
+                            {% else %}
+                                <div class="no-image"><i class="fas fa-image"></i></div>
+                            {% endif %}
+                        </div>
+                        <div class="hall-info">
+                            <h3>{{ hall[1] }}</h3>
+                            <p><i class="fas fa-map-marker-alt"></i> {{ hall[2] }}</p>
+                            <p>{{ hall[3] }}</p>
+                        </div>
+                        <div class="hall-actions">
+                            <form action="{{ url_for('hall.delete') }}" method="POST" class="delete-form">
+                                <input type="hidden" name="hall_id" value="{{ hall[0] }}">
+                                <button type="submit" class="delete-btn">
+                                    <i class="fas fa-trash"></i> Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Вкладка управления пользователями -->
+            <div id="users" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-users"></i> Управление пользователями</h2>
+                </div>
+
+                <!-- Список пользователей -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Логин</th>
+                            <th>Email</th>
+                            <th>Имя</th>
+                            <th>Роль</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user[4] }}</td>
+                            <td>{{ user[5] }}</td>
+                            <td>{{ user[1] }} {{ user[2] }}</td>
+                            <td>{{ "Администратор" if user[7] == 1 else "Пользователь" }}</td>
+                            <td class="actions">
+                                <form action="{{ url_for('user.delete_user') }}" method="POST">
+                                    <input type="hidden" name="user_id" value="{{ user[0] }}">
+                                    <button type="submit" class="delete-btn">
+                                        <i class="fas fa-trash"></i> Удалить
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Вкладка управления бронированиями -->
+            <div id="bookings" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Управление бронированиями</h2>
+                </div>
+
+                <!-- Список бронирований -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Зал</th>
+                            <th>Пользователь</th>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking[1] }}</td>
+                            <td>{{ booking[2] }}</td>
+                            <td>{{ booking[3] }}</td>
+                            <td>{{ booking[4] }} - {{ booking[5] }}</td>
+                            <td>{{ "Активно" if booking[6] == 1 else "Завершено" }}</td>
+                            <td class="actions">
+                                <form action="{{ url_for('booking.delete_booking_admin') }}" method="POST">
+                                    <input type="hidden" name="booking_id" value="{{ booking[0] }}">
+                                    <button type="submit" class="delete-btn">
+                                        <i class="fas fa-trash"></i> Удалить
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-{% endif %}
 
-<h2>Управление залами</h2>
 
-<div>
-    <a href="{{ url_for('hall.add_form') }}" class="btn btn-primary mb-2">
-        Добавить новый зал
-    </a>
-</div>
-
-<h3>Список залов</h3>
-{% if halls %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Адрес</th>
-                <th>Действия с залом</th>
-                <th>Оборудование</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for hall in halls %}
-            <tr>
-                <td>{{ hall[0] }}</td>
-                <td>{{ hall[1] }}</td>
-                <td>{{ hall[2] }}</td>
-                <td>
-                    <a href="{{ url_for('hall.get_hall', hall_id=hall[0]) }}" class="btn btn-sm btn-info">
-                        Просмотреть
-                    </a>
-                    <a href="{{ url_for('hall.edit_form', hall_id=hall[0]) }}" class="btn btn-sm btn-warning">
-                        Редактировать
-                    </a>
-                    <form method="POST" action="{{ url_for('hall.delete') }}" style="display:inline;">
-                        <input type="hidden" name="hall_id" value="{{ hall[0] }}">
-                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
-                    </form>
-                </td>
-                <td>
-                    <a href="{{ url_for('equipment.view_equipment', hall_id=hall[0]) }}" class="btn btn-sm btn-info">
-                        Просмотр оборудования
-                    </a>
-                    <a href="{{ url_for('equipment.add_form', hall_id=hall[0]) }}" class="btn btn-sm btn-success">
-                        Добавить оборудование
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>Залы не найдены</p>
-{% endif %}
-
-<h2>Управление оборудованием</h2>
-<div>
-    <a href="{{ url_for('equipment.view_all_equipment') }}" class="btn btn-primary mb-3">
-        Просмотреть все оборудование
-    </a>
-</div>
-{% endblock %}
+</body>
+</html>

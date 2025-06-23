@@ -68,18 +68,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const hallId = parseInt(document.querySelector('.week-days').dataset.hallId);
-            const todayIso = "{{ current_date_iso }}";  // Получаем дату из Python
+            const todayIso = "{{ current_date_iso }}";
             
-            let currentWeekStart = new Date(todayIso);  // Используем переданную дату
-            let activeDate = new Date(todayIso); 
+            // СМЕЩЕНИЕ: искусственно перемещаемся на 1 день назад
+            const serverToday = new Date(todayIso);
+            serverToday.setDate(serverToday.getDate() - 1);  // Смещаем дату назад
+            serverToday.setHours(0, 0, 0, 0);
+            
+            // Рассчитываем конечную дату бронирования (serverToday + 13 дней)
+            const endAvailableDate = new Date(serverToday);
+            endAvailableDate.setDate(endAvailableDate.getDate() + 13);
+
+            // Вычисляем понедельник текущей недели
+            let dayOfWeek = serverToday.getDay(); // 0-6 (0 - воскресенье)
+            let diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Коррекция для понедельника
+            let currentWeekStart = new Date(serverToday);
+            currentWeekStart.setDate(serverToday.getDate() - diff);
+            currentWeekStart.setHours(0, 0, 0, 0);
+
+            let activeDate = new Date(serverToday);
             let startSlot = null;
             let endSlot = null;
 
-            // Устанавливаем начальную дату на понедельник текущей недели
-            const dayOfWeek = currentWeekStart.getDay();
-            const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Если воскресенье (0), то отнимаем 6 дней
-            currentWeekStart.setDate(currentWeekStart.getDate() - diff);
-            
             // Функция для сброса выделения времени
             function clearSelection() {
                 document.querySelectorAll('.slot').forEach(slot => {
@@ -106,20 +116,17 @@
 
             // Обновление календаря (дни недели)
             function updateCalendar() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); // Сбрасываем время для точного сравнения
+                const today = serverToday;
                 
                 const daysContainer = document.querySelector('.week-days');
                 daysContainer.innerHTML = '';
 
-                // Обновляем отображаемый месяц/год
                 document.getElementById('current-date').textContent = formatDate(currentWeekStart);
 
-                // Создаем элементы дней недели
                 for (let i = 0; i < 7; i++) {
                     const dayDate = new Date(currentWeekStart);
                     dayDate.setDate(currentWeekStart.getDate() + i);
-                    dayDate.setHours(0, 0, 0, 0); // Сбрасываем время
+                    dayDate.setHours(0, 0, 0, 0);
                     
                     const dayElement = document.createElement('div');
                     dayElement.className = 'day';
@@ -129,17 +136,15 @@
                         <span>${dayDate.getDate()}</span>
                     `;
                     
-                    // Помечаем активный день
                     if (dayDate.toDateString() === activeDate.toDateString()) {
                         dayElement.classList.add('active');
                     }
                     
-                    // Помечаем прошедшие дни
-                    if (dayDate < today) {
+                    // Помечаем недоступные дни (прошлые и дальше 2 недель)
+                    if (dayDate < serverToday || dayDate > endAvailableDate) {
                         dayElement.classList.add('past-day');
                     }
                     
-                    // Обработчик клика по дню
                     dayElement.addEventListener('click', function() {
                         if (!this.classList.contains('past-day')) {
                             setActiveDay(this);
@@ -152,52 +157,39 @@
 
             // Установка активного дня
             function setActiveDay(dayElement) {
-                // Снимаем выделение со всех дней
                 document.querySelectorAll('.day').forEach(day => {
                     day.classList.remove('active');
                 });
                 
-                // Устанавливаем выделение выбранному дню
                 dayElement.classList.add('active');
-                
-                // Обновляем активную дату
                 activeDate = new Date(dayElement.dataset.date);
-                
-                // Обновляем слоты времени для новой даты
                 updateTimeSlots();
             }
 
             // Обновление слотов времени для активной даты
             async function updateTimeSlots() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                const today = serverToday;
+                const now = new Date();
+                now.setDate(now.getDate() - 1);  // СМЕЩЕНИЕ: корректируем текущее время
                 
                 const dateStr = activeDate.toISOString().split('T')[0];
-
-
                 
                 try {
-                    // Получаем забронированные интервалы для выбранной даты
                     const intervalsResponse = await fetch(`/booking/booked_intervals?hall_id=${hallId}&date=${dateStr}`);
                     const bookedIntervals = await intervalsResponse.json();
                     
-                    // Очищаем предыдущие слоты
                     for (let hour = 9; hour <= 16; hour++) {
                         const grid = document.getElementById(`grid-${hour}`);
                         if (grid) grid.innerHTML = '';
                     }
 
-                    // Сбрасываем выделение времени
                     clearSelection();
                     
-                    // Определяем, является ли активная дата сегодняшним днем
                     const isToday = 
                         activeDate.getFullYear() === today.getFullYear() &&
                         activeDate.getMonth() === today.getMonth() &&
                         activeDate.getDate() === today.getDate();
-                    const now = new Date();
                     
-                    // Заполняем слоты времени
                     for (let hour = 9; hour <= 16; hour++) {
                         const grid = document.getElementById(`grid-${hour}`);
                         if (!grid) continue;
@@ -208,7 +200,6 @@
                             const time = `${hour}:${minute.toString().padStart(2, '0')}`;
                             const timeObj = new Date(0, 0, 0, hour, minute);
                             
-                            // Проверяем, занят ли слот
                             let isBooked = false;
                             for (const interval of bookedIntervals) {
                                 const startParts = interval.start.split(':').map(Number);
@@ -222,41 +213,32 @@
                                 }
                             }
                             
-                            // Проверяем, является ли слот прошедшим
                             let isPast = false;
-                            if (isToday) {
-                                // Для сегодняшнего дня сравниваем с текущим временем
-                                const now = new Date();
-                                const slotTime = new Date(activeDate); // Используем активную дату
+                            if (activeDate < today) {
+                                isPast = true;
+                            } else if (isToday) {
+                                const slotTime = new Date(activeDate);
                                 slotTime.setHours(hour, minute, 0, 0);
                                 
                                 if (slotTime < now) {
                                     isPast = true;
                                 }
-                            } else if (activeDate < today) {
-                                // Для прошлых дней все слоты помечаем как прошедшие
-                                isPast = true;
                             }
                             
-                            // Создаем элемент слота
                             const slot = document.createElement('div');
                             slot.className = `slot ${isBooked ? 'booked' : 'available'} ${isPast ? 'past-slot' : ''}`;
                             slot.textContent = time;
                             slot.dataset.time = time;
 
-                            // Обработка клика только для доступных слотов
                             if (!isBooked && !isPast) {
                                 slot.addEventListener('click', (e) => {
                                     if (!startSlot) {
-                                        // Выбираем начальный слот
                                         startSlot = time;
                                         slot.classList.add('start-selected');
                                     } else if (!endSlot) {
-                                        // Выбираем конечный слот
                                         endSlot = time;
                                         highlightRange(startSlot, endSlot);
                                     } else {
-                                        // Сбрасываем выбор, если уже выбран диапазон
                                         clearSelection();
                                         startSlot = time;
                                         slot.classList.add('start-selected');
@@ -314,7 +296,19 @@
             
             // Обработчики кнопок переключения недели
             document.getElementById('prev-week').addEventListener('click', () => {
-                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+                let newWeekStart = new Date(currentWeekStart);
+                newWeekStart.setDate(newWeekStart.getDate() - 7);
+                newWeekStart.setHours(0, 0, 0, 0);
+                
+                // Проверяем, не уходит ли неделя в недоступный период
+                let lastDayOfNewWeek = new Date(newWeekStart);
+                lastDayOfNewWeek.setDate(lastDayOfNewWeek.getDate() + 6);
+                
+                if (lastDayOfNewWeek < serverToday) {
+                    return; // Не переключаем если неделя в прошлом
+                }
+                
+                currentWeekStart = newWeekStart;
                 updateCalendar();
                 // Устанавливаем активным первый день недели
                 const firstDay = document.querySelector('.day:not(.past-day)');
@@ -322,7 +316,16 @@
             });
 
             document.getElementById('next-week').addEventListener('click', () => {
-                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                let newWeekStart = new Date(currentWeekStart);
+                newWeekStart.setDate(newWeekStart.getDate() + 7);
+                newWeekStart.setHours(0, 0, 0, 0);
+                
+                // Проверяем, не уходит ли неделя в недоступный период
+                if (newWeekStart > endAvailableDate) {
+                    return; // Не переключаем если неделя выходит за пределы
+                }
+                
+                currentWeekStart = newWeekStart;
                 updateCalendar();
                 // Устанавливаем активным первый день недели
                 const firstDay = document.querySelector('.day:not(.past-day)');
