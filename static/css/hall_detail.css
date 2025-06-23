@@ -351,3 +351,30 @@ footer {
         columns: 1;
     }
 }
+
+@media (max-width: 768px) {
+    .hall-detail-container {
+        padding: 0 10px;
+    }
+    
+    .hall-content {
+        flex-direction: column;
+    }
+    
+    .main-photo {
+        height: 250px;
+    }
+    
+    .thumbnail {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .info-card {
+        padding: 20px;
+    }
+    
+    .equipment-list {
+        columns: 1;
+    }
+}

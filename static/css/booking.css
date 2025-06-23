@@ -400,3 +400,38 @@ nav ul a:hover {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 480px) {
+    .booking-container {
+        padding: 15px;
+    }
+    
+    .date-navigation {
+        flex-direction: column;
+        gap: 10px;
+        padding: 0;
+    }
+    
+    .date-navigation button {
+        width: 100%;
+    }
+    
+    .week-days {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .availability-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .slot {
+        padding: 10px 5px;
+        font-size: 12px;
+        min-height: 40px;
+    }
+    
+    .legend {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

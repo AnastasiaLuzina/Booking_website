@@ -24,6 +24,44 @@
             <div id="halls" class="tab-content active">
                 <div class="tab-header">
                     <h2><i class="fas fa-building"></i> Управление залами</h2>
+                    <button id="addHallBtn" class="add-btn">
+                        <i class="fas fa-plus"></i> Добавить зал
+                    </button>
+                </div>
+
+                <!-- Форма добавления зала (изначально скрыта) -->
+                <div id="addHallForm" class="form-container hidden">
+                    <h3><i class="fas fa-plus-circle"></i> Добавление нового зала</h3>
+                    <form action="{{ url_for('hall.add_hall') }}" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="hallTitle">Название зала</label>
+                            <input type="text" id="hallTitle" name="title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hallAddress">Адрес</label>
+                            <input type="text" id="hallAddress" name="address" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hallDescription">Описание</label>
+                            <textarea id="hallDescription" name="description" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hallPhotos">Фотографии зала</label>
+                            <input type="file" id="hallPhotos" name="photos" multiple accept="image/*">
+                            
+                            <div class="photo-preview-container" id="photoPreview">
+                                <!-- Превью фотографий будет появляться здесь -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" id="cancelAddHall" class="cancel-btn">Отмена</button>
+                            <button type="submit" class="save-btn">Сохранить зал</button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Список залов -->
@@ -135,6 +173,63 @@
         </div>
     </div>
 
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addBtn = document.getElementById('addHallBtn');
+            const addForm = document.getElementById('addHallForm');
+            const cancelBtn = document.getElementById('cancelAddHall');
+            const photoInput = document.getElementById('hallPhotos');
+            const photoPreview = document.getElementById('photoPreview');
+            
+            // Показать/скрыть форму добавления
+            addBtn.addEventListener('click', () => {
+                addForm.classList.remove('hidden');
+                addBtn.classList.add('hidden');
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                addForm.classList.add('hidden');
+                addBtn.classList.remove('hidden');
+                photoPreview.innerHTML = '';
+                photoInput.value = '';
+            });
+            
+            // Превью фотографий
+            photoInput.addEventListener('change', function() {
+                photoPreview.innerHTML = '';
+                
+                if (this.files && this.files.length > 0) {
+                    for (let i = 0; i < this.files.length; i++) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const preview = document.createElement('div');
+                            preview.className = 'photo-preview';
+                            preview.innerHTML = `
+                                <img src="${e.target.result}" alt="Preview">
+                                <span class="remove-photo" data-index="${i}">&times;</span>
+                            `;
+                            photoPreview.appendChild(preview);
+                            
+                            // Удаление превью
+                            preview.querySelector('.remove-photo').addEventListener('click', function() {
+                                const index = parseInt(this.getAttribute('data-index'));
+                                const dt = new DataTransfer();
+                                const files = Array.from(photoInput.files);
+                                
+                                files.splice(index, 1);
+                                files.forEach(file => dt.items.add(file));
+                                photoInput.files = dt.files;
+                                
+                                preview.remove();
+                            });
+                        }
+                        
+                        reader.readAsDataURL(this.files[i]);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

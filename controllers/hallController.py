@@ -1,5 +1,5 @@
 
-from flask import Blueprint, session, request, render_template, redirect, url_for, jsonify
+from flask import Blueprint, session, request, render_template, redirect, url_for, jsonify, flash  # <-- Добавить flash
 from tools.tools_for_base import connect_to_base, close_base
 import base64  # Добавьте эту строку
 import sqlite3

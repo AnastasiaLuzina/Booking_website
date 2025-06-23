@@ -345,3 +345,42 @@ footer {
     font-size: 12px;
     color: #666;
 }
+
+@media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .hero-image {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .benefits-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .benefit-card {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .top-list {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .top-item {
+        width: 100%;
+        max-width: 350px;
+        margin-bottom: 20px;
+    }
+    
+    nav ul {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
