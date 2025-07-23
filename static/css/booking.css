@@ -391,13 +391,31 @@ nav ul a:hover {
     }
 }
 
+/* В существующий медиа-запрос для 480px */
 @media (max-width: 480px) {
-    .week-days {
-        grid-template-columns: repeat(2, 1fr);
+    .date-navigation {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
     }
-    
-    .availability-grid {
-        grid-template-columns: 1fr;
+
+    .date-navigation button {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    .date-navigation #prev-week {
+        order: 1;
+    }
+
+    .date-navigation #current-date {
+        order: 0;
+    }
+
+    .date-navigation #next-week {
+        order: 2;
+ 
     }
 }
 
