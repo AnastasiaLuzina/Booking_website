@@ -16,6 +16,82 @@ body {
 }
 
 /* Шапка */
+/* Шапка (базовые стили) */
+.desktop-menu {
+    display: block; /* Показываем на ПК */
+}
+
+/* Кнопка бургера */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    color: #007bff;
+    font-size: 29px;
+}
+.mobile-menu-btn.open {
+    transform: rotate(90deg);
+}
+
+/* Мобильное меню */
+.mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Блокировка прокрутки */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* Мобильное меню */
+.mobile-menu-container {
+    position: fixed;
+    top: 70px; /* Высота шапки */
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    z-index: 1000;
+    transition: max-height 0.3s ease;
+}
+
+.mobile-menu-container.active {
+    max-height: 80vh; /* 80% высоты экрана */
+    overflow-y: auto;
+}
+
+/* Кнопка бургера */
+#burgerButton {
+    display: none; /* По умолчанию скрыта */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
 .logo {
     font-size: 20px;
     font-weight: bold;
@@ -232,24 +308,123 @@ footer {
     }
 }
 
-@media (max-width: 480px) {
-    .catalog {
+/* Адаптация для мобилок (только изменения!) */
+@media (max-width: 768px) {
+
+    #burgerButton {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none;
+    }
+    /* Шапка */
+    nav ul {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    header {
         padding: 10px;
-        gap: 15px;
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
     }
     
+    
+    
+    /* Основной контейнер */
+    .catalog {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+    }
+
+    /* Карточка зала */
     .hall-card {
         width: 100%;
+        max-width: 100%;
+        margin: 0 auto 20px auto;
         padding: 15px;
     }
-    
-    nav ul {
-        flex-wrap: wrap;
-        gap: 10px;
+
+    /* Заголовок в карточке */
+    .hall-card h3 {
+        font-size: 1.1rem;
+        text-align: center;
+        white-space: normal; /* Разрешаем перенос текста */
+        min-height: 3em;     /* Чтобы заголовок всегда был виден красиво */
+    }
+
+    /* Фото в карточке */
+    .hall-photo,
+    .hall-photo img {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .no-photo {
+        width: 100%;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0f0f0;
+        color: #999;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+    /* Кнопка бронирования */
+    .booking-link {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        text-align: center;
+        font-size: 1rem;
+        margin-top: 10px;
+        background-color: #1e6bdc;
+        color: #fff;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .booking-link:hover {
+        background-color: #165bb8;
+    }
+
+    /* Центрируем заголовок "Каталог залов" */
+    main > h2 {
+        font-size: 1.4rem;
+        margin-top: 15px;
+    }
+    /* Подвал */
+    footer {
+        padding: 10px;
+        margin-top: 15px;
     }
     
-    nav ul li a.button {
-        margin: 0;
-        padding: 6px 12px;
+}
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block; /* Показываем на мобильных */
+    }
+    .desktop-menu {
+        display: none; /* Скрываем ПК-меню */
+    }
+}
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .member-info {
+        padding: 10px;
+    }
+    .member-name {
+        font-size: 1.2em;
+    }
+    .member-bio {
+        font-size: 0.8em;
     }
 }
